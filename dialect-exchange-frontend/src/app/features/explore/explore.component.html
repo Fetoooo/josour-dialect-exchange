@@ -1,0 +1,207 @@
+<div class="jusoor-dashboard" dir="rtl">
+
+  <div class="bg-shapes">
+    <div class="shape shape-teal"></div>
+    <div class="shape shape-gold"></div>
+  </div>
+
+  <!-- Toolbar -->
+  <mat-toolbar class="main-header">
+    <div class="brand">
+      <div class="sound-icon"><span></span><span></span><span></span></div>
+      <span class="logo-text">جُسور</span>
+    </div>
+
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="search-input"
+        placeholder="ابحث عن لهجة أو دولة..."
+        [value]="searchQuery()"
+        (input)="onSearch($any($event.target).value)" />
+      @if (searchQuery()) {
+        <button class="clear-btn" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
+
+    <span class="spacer"></span>
+    <button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      <span>أهلاً، {{ authService.currentUser()?.displayName || 'مستخدم جُسور' }}</span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon><span>الملف الشخصي</span>
+      </button>
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon><span>الإعدادات</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon><span>تسجيل الخروج</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <!-- Layout -->
+  <mat-sidenav-container class="sidenav-container" [class.sidebar-collapsed]="appSettings.settings().sidebarCollapsed">
+    <mat-sidenav mode="side" opened class="sidebar" [class.collapsed]="appSettings.settings().sidebarCollapsed">
+      <!-- Collapse toggle header -->
+      <div class="sidebar-top-bar">
+        <button class="sidebar-toggle-btn"
+                (click)="appSettings.toggleSidebar()"
+                [title]="appSettings.settings().sidebarCollapsed ? 'توسيع القائمة' : 'تصغير القائمة'"
+                type="button">
+          <mat-icon>{{ appSettings.settings().sidebarCollapsed ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+        </button>
+        <span class="sidebar-section-badge">القائمة</span>
+      </div>
+
+      <nav class="side-nav">
+        <!-- Navigation Section: تصفح -->
+        <div class="nav-section">
+          <span class="nav-section-title">التصفح</span>
+          <a routerLink="/home" routerLinkActive="active" class="nav-item" title="الرئيسية">
+            <div class="nav-icon-box"><mat-icon>home</mat-icon></div>
+            <span class="nav-label">الرئيسية</span>
+          </a>
+          <a routerLink="/explore" routerLinkActive="active" class="nav-item" title="استكشف اللهجات">
+            <div class="nav-icon-box"><mat-icon>explore</mat-icon></div>
+            <span class="nav-label">استكشف اللهجات</span>
+          </a>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Navigation Section: التواصل -->
+        <div class="nav-section">
+          <span class="nav-section-title">التواصل والمجتمع</span>
+          <a routerLink="/messages" routerLinkActive="active" class="nav-item" title="الرسائل">
+            <div class="nav-icon-box"><mat-icon>chat</mat-icon></div>
+            <span class="nav-label">الرسائل</span>
+          </a>
+          <a routerLink="/my-bridges" routerLinkActive="active" class="nav-item" title="جسوري">
+            <div class="nav-icon-box"><mat-icon>shortcut</mat-icon></div>
+            <span class="nav-label">جسوري</span>
+          </a>
+          <a routerLink="/community" routerLinkActive="active" class="nav-item" title="المجتمع">
+            <div class="nav-icon-box"><mat-icon>groups</mat-icon></div>
+            <span class="nav-label">المجتمع</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Sleek Action Capsule -->
+      <div class="sidebar-action-wrap">
+        <button class="new-clip-action-btn" (click)="openUploadDialog()" title="ساهم بمقطع جديد" type="button">
+          <div class="action-btn-icon">
+            <mat-icon>video_call</mat-icon>
+          </div>
+          <span class="action-btn-text">مقطع جديد</span>
+        </button>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="content" [style.margin-right.px]="appSettings.settings().sidebarCollapsed ? 68 : 215">
+      <div class="content-inner">
+
+        <header class="page-header">
+          <div class="header-copy">
+            <div class="header-icon">🗺️</div>
+            <div>
+              <h1>استكشف اللهجات العربية</h1>
+              <p>تعرف على لهجات عربية من كل زاوية في الوطن العربي</p>
+            </div>
+          </div>
+          <aside class="arabic-quote">
+            <span class="quote-mark">“</span>
+            <p>العربية ليست لغة واحدة فحسب، بل حدائق من الأصوات والقصص، لكل لهجة فيها نافذة على أهلها ومكانها.</p>
+            <span class="quote-credit">رحلة التعلم تبدأ بالإنصات</span>
+            <div class="quote-trail" aria-label="رحلة اللهجات العربية">
+              <span>المغرب</span><i></i><span>المشرق</span><i></i><span>وادي النيل</span><i></i><span>الخليج</span>
+            </div>
+          </aside>
+        </header>
+
+        <div class="discovery-row">
+          <div class="stats-bar">
+            <div class="stat-item">
+              <span class="stat-num">{{ dialects().length }}</span>
+              <span class="stat-label">لهجة مدعومة</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-num">+350M</span>
+              <span class="stat-label">متحدث عربي</span>
+            </div>
+            <div class="stat-divider"></div>
+            <div class="stat-item">
+              <span class="stat-num">22</span>
+              <span class="stat-label">دولة عربية</span>
+            </div>
+          </div>
+          <aside class="discovery-note">
+            <mat-icon>forum</mat-icon>
+            <div><strong>كل لهجة تحمل منظوراً</strong><span>تعلم كلمة جديدة، واكتشف طريقة أخرى لرؤية العالم.</span></div>
+          </aside>
+        </div>
+
+        <!-- Empty state -->
+        @if (filteredDialects().length === 0) {
+          <div class="empty-state">
+            <mat-icon>search_off</mat-icon>
+            <p>لا توجد نتائج لـ "{{ searchQuery() }}"</p>
+            <button mat-stroked-button (click)="clearSearch()">مسح البحث</button>
+          </div>
+        }
+
+        <!-- Dialects Grid -->
+        <div class="dialects-grid">
+          @for (dialect of filteredDialects(); track dialect.id) {
+            <div class="dialect-card" (click)="exploreDialect(dialect)">
+              <div class="card-top"
+                [style.background-image]="'url(' + dialect.image + ')'"
+                [style.background-color]="dialect.color">
+                <span class="flag">{{ dialect.flag }}</span>
+                <div class="card-overlay"></div>
+                <div class="card-header-text">
+                  <h3>{{ dialect.nameAr }}</h3>
+                  <span class="name-en">{{ dialect.nameEn }}</span>
+                </div>
+              </div>
+              <div class="card-body">
+                <p class="country">
+                  <mat-icon>location_on</mat-icon>
+                  {{ dialect.country }}
+                </p>
+                <p class="description">{{ dialect.description }}</p>
+                <div class="card-footer">
+                  <div class="speakers">
+                    <mat-icon>people</mat-icon>
+                    <span>{{ dialect.speakers }} متحدث</span>
+                  </div>
+                  <button class="explore-btn" [style.background]="dialect.color">
+                    استكشف
+                    <mat-icon>arrow_back</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <section class="closing-message">
+          <div class="closing-icon"><mat-icon>diversity_3</mat-icon></div>
+          <div>
+            <span class="closing-kicker">من الاختلاف نصنع جسراً</span>
+            <h2>كل لهجة فريدة بطريقتها، وكل كلمة تقرّبنا أكثر</h2>
+            <p>قد تختلف النغمة والمفردات من بلد إلى آخر، لكن الفضول والإنصات يجعلان المسافة أقصر. ابدأ بلهجة واحدة، وستجد عالماً كاملاً من القصص والصداقات.</p>
+          </div>
+        </section>
+
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

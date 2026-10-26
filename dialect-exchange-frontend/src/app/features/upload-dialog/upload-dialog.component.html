@@ -1,0 +1,75 @@
+<div class="jusoor-dialog" dir="rtl">
+  <h2 mat-dialog-title>إضافة جسر جديد</h2>
+  
+  <mat-dialog-content>
+    <form class="upload-form">
+      <!-- Title -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>عنوان المقطع</mat-label>
+        <input matInput [(ngModel)]="uploadData.title" name="title" placeholder="مثال: كيف تطلب القهوة بلهجتنا؟" required>
+      </mat-form-field>
+
+      <!-- Dialect Selection -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>اللهجة</mat-label>
+        <mat-select [(ngModel)]="uploadData.dialectId" name="dialectId" required>
+          @for (d of dialects; track d.id) {
+            <mat-option [value]="d.id">{{ d.emoji }} {{ d.nameAr }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>وصف المقطع (اختياري)</mat-label>
+        <textarea matInput [(ngModel)]="uploadData.description" name="description" rows="2"
+          placeholder="أضف سياقاً قصيراً يساعد الآخرين على فهم المقطع"></textarea>
+      </mat-form-field>
+
+      <!-- Media Type Toggle -->
+      <div class="type-selector">
+        <label>نوع المقطع:</label>
+        <mat-button-toggle-group [(ngModel)]="uploadData.mediaType" name="mediaType">
+          <mat-button-toggle value="video">فيديو</mat-button-toggle>
+          <mat-button-toggle value="audio">صوت فقط</mat-button-toggle>
+        </mat-button-toggle-group>
+      </div>
+
+      <!-- File Input -->
+      <div class="file-drop-zone" (click)="fileInput.click()">
+        <mat-icon>cloud_upload</mat-icon>
+        <p>{{ selectedFile ? selectedFile.name : 'اسحب الملف هنا أو اضغط للاختيار' }}</p>
+        <input #fileInput type="file" (change)="onFileSelected($event)" hidden accept="video/*,audio/*">
+      </div>
+
+      <div class="thumbnail-section">
+        <div class="thumbnail-heading">
+          <div>
+            <strong>الصورة المصغرة</strong>
+            <span>اختر صورة تعبّر عن المقطع لتظهر كغلاف له</span>
+          </div>
+          <mat-icon>image</mat-icon>
+        </div>
+        <div class="thumbnail-picker" (click)="thumbnailInput.click()">
+          @if (thumbnailPreview) {
+            <img [src]="thumbnailPreview" alt="معاينة الصورة المصغرة">
+            <span>تغيير الصورة</span>
+          } @else {
+            <mat-icon>add_photo_alternate</mat-icon>
+            <span>اختر صورة غلاف (اختياري)</span>
+          }
+          <input #thumbnailInput type="file" (change)="onThumbnailSelected($event)" hidden accept="image/*">
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>إلغاء</button>
+    <button mat-flat-button color="primary" 
+            [disabled]="!uploadData.title || !uploadData.dialectId || !selectedFile || isLoading()"
+            (click)="onUpload()">
+      <span *ngIf="!isLoading()">نشر الآن</span>
+      <mat-spinner *ngIf="isLoading()" diameter="24"></mat-spinner>
+    </button>
+  </mat-dialog-actions>
+</div>

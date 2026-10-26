@@ -1,0 +1,76 @@
+<div class="bell-wrapper" dir="rtl">
+
+  <!-- Bell button -->
+  <button class="bell-btn" (click)="toggle()" [class.active]="isOpen()">
+    <mat-icon>notifications</mat-icon>
+    @if (hasUnread()) {
+      <span class="badge">{{ unreadCount() > 9 ? '9+' : unreadCount() }}</span>
+    }
+  </button>
+
+  <!-- Dropdown panel -->
+  @if (isOpen()) {
+    <div class="notif-panel">
+
+      <!-- Header -->
+      <div class="panel-header">
+        <span class="panel-title">
+          الإشعارات
+          @if (unreadCount() > 0) {
+            <span class="unread-pill">{{ unreadCount() }} جديد</span>
+          }
+        </span>
+        <div class="header-actions">
+          @if (unreadCount() > 0) {
+            <button class="text-btn" (click)="markAllRead()">تحديد الكل كمقروء</button>
+          }
+          @if (notifications().length > 0) {
+            <button class="text-btn danger" (click)="clearAll()">مسح الكل</button>
+          }
+        </div>
+      </div>
+
+      <!-- List -->
+      <div class="notif-list">
+        @if (notifications().length === 0) {
+          <div class="empty-notifs">
+            <div class="empty-icon">🔔</div>
+            <p>لا توجد إشعارات بعد</p>
+            <span>ستظهر هنا إشعارات الإعجابات والتعليقات والرسائل</span>
+          </div>
+        }
+
+        @for (n of notifications(); track n.id) {
+          <div class="notif-item" [class.unread]="!n.isRead" (click)="onNotifClick(n)">
+
+            <!-- Icon -->
+            <div class="notif-icon" [style.background]="iconColor(n.type) + '18'"
+                 [style.color]="iconColor(n.type)">
+              <mat-icon>{{ n.icon }}</mat-icon>
+            </div>
+
+            <!-- Text -->
+            <div class="notif-body">
+              <p class="notif-title">{{ n.title }}</p>
+              <p class="notif-text">{{ n.body }}</p>
+              <span class="notif-time">{{ timeAgo(n.createdAt) }}</span>
+            </div>
+
+            <!-- Unread dot + remove -->
+            <div class="notif-meta">
+              @if (!n.isRead) {
+                <span class="unread-dot"></span>
+              }
+              <button class="remove-btn" (click)="remove($event, n.id)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+          </div>
+        }
+      </div>
+
+    </div>
+  }
+
+</div>

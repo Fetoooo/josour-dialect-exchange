@@ -1,0 +1,296 @@
+// Brand Colors
+$color-teal: #0d9488;
+$color-teal-dark: #0f766e;
+$color-gold: #d97706;
+$color-blue: #0284c7;
+$text-dark: #1e293b;
+$text-light: #64748b;
+
+.jusoor-wrapper {
+  position: relative;
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0fdfa;
+  overflow: hidden;
+  font-family: 'Cairo', sans-serif;
+  padding: 20px 0; // Added padding so it doesn't touch screen edges on small monitors
+}
+
+// Background Animations
+.bg-shapes {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  overflow: hidden;
+  z-index: 0;
+
+  .shape {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.6;
+    animation: float 15s infinite alternate ease-in-out;
+  }
+  .shape-teal { width: 500px; height: 500px; background: $color-teal; top: -100px; right: -100px; }
+  .shape-gold { width: 400px; height: 400px; background: rgba($color-gold, 0.4); bottom: -50px; left: 10%; animation-delay: -5s; }
+  .shape-blue { width: 600px; height: 600px; background: rgba($color-blue, 0.3); top: 30%; left: -200px; animation-delay: -10s; }
+}
+
+// Glass Card (Wider for Register)
+.glass-card {
+  position: relative;
+  z-index: 10;
+  width: 1100px; // Slightly wider to accommodate side-by-side fields
+  max-width: 95%;
+  min-height: 600px;
+  display: flex;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 24px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+}
+
+// Sidebar
+.brand-sidebar {
+  flex: 1;
+  background: linear-gradient(135deg, $color-teal 0%, $color-teal-dark 100%);
+  color: white;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+
+  .brand-content { position: relative; z-index: 2; }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 25px;
+
+    .brand-name { font-size: 48px; font-weight: 800; margin: 0; letter-spacing: -1px; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+  }
+
+  .soundwave {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 40px;
+
+    .bar {
+      width: 6px; background: $color-gold; border-radius: 3px; animation: sound 1.5s infinite ease-in-out;
+      &:nth-child(1) { height: 15px; animation-delay: 0.1s; }
+      &:nth-child(2) { height: 35px; animation-delay: 0.3s; }
+      &:nth-child(3) { height: 20px; animation-delay: 0.5s; }
+      &:nth-child(4) { height: 40px; animation-delay: 0.2s; }
+      &:nth-child(5) { height: 25px; animation-delay: 0.4s; }
+    }
+  }
+
+  .tagline { font-size: 22px; font-weight: 300; line-height: 1.6; opacity: 0.9; }
+
+  .culture-note {
+    position: relative;
+    z-index: 2;
+    margin-top: 42px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.1);
+
+    .culture-kicker { color: #fbbf24; font-size: 13px; font-weight: 800; }
+    h3 { margin: 6px 0 8px; font-size: 20px; }
+    p { margin: 0; font-size: 14px; line-height: 1.9; opacity: 0.88; }
+    .culture-facts { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+    .culture-facts span {
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.14);
+      font-size: 12px;
+    }
+  }
+
+  .watermark { position: absolute; bottom: -20px; left: -20px; font-size: 150px; font-weight: 800; opacity: 0.05; z-index: 1; transform: rotate(-15deg); pointer-events: none; }
+}
+
+// Form Side
+.form-side {
+  flex: 1.4; // Slightly more space for the form side
+  padding: 50px 60px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .form-header {
+    margin-bottom: 30px;
+    h2 { font-size: 32px; font-weight: 700; color: $text-dark; margin: 0 0 5px 0; }
+    p { color: $text-light; font-size: 16px; margin: 0; }
+  }
+
+  .jusoor-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    // --- GRID LAYOUT FOR TWO COLUMNS ---
+    .form-row {
+      display: flex;
+      gap: 20px;
+      width: 100%;
+      margin-bottom: 5px; // Reduced bottom margin because fields handle their own spacing
+      
+      .half-width {
+        flex: 1; // Take equal half
+      }
+    }
+
+    .input-wrapper {
+      width: 100%;
+      margin-bottom: 5px;
+    }
+
+    mat-form-field {
+      width: 100%;
+      
+      ::ng-deep .mdc-text-field--outlined {
+        border-radius: 12px !important;
+        background-color: rgba(255, 255, 255, 0.8) !important;
+      }
+      ::ng-deep .mat-mdc-text-field-wrapper {
+        padding: 8px 15px !important;
+      }
+      ::ng-deep input.mat-mdc-input-element, ::ng-deep .mat-mdc-select-value {
+        font-size: 16px !important;
+        padding: 12px 0 !important;
+        color: $text-dark !important;
+      }
+      ::ng-deep .mdc-notched-outline__leading, ::ng-deep .mdc-notched-outline__notch, ::ng-deep .mdc-notched-outline__trailing {
+        border-color: rgba($color-teal, 0.4) !important;
+        border-width: 2px !important;
+        transition: border-color 0.3s ease;
+      }
+      &.mat-focused ::ng-deep .mdc-notched-outline__leading, &.mat-focused ::ng-deep .mdc-notched-outline__notch, &.mat-focused ::ng-deep .mdc-notched-outline__trailing {
+        border-color: $color-teal !important;
+      }
+    }
+
+    mat-icon {
+      color: $color-teal;
+      margin-left: 10px;
+      transform: scale(1.2);
+    }
+
+    .submit-btn {
+      background: linear-gradient(90deg, $color-teal, $color-teal-dark);
+      color: white;
+      padding: 30px;
+      font-size: 18px;
+      font-weight: 700;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba($color-teal, 0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 60px;
+      margin-top: 15px;
+
+      &:hover:not([disabled]) {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 25px rgba($color-teal, 0.4);
+      }
+      &[disabled] { background: #cbd5e1; box-shadow: none; }
+    }
+
+    .login-link {
+      margin-top: 30px;
+      text-align: center;
+      color: $text-light;
+      font-size: 15px;
+      a { color: $color-gold; font-weight: 700; text-decoration: none; &:hover { text-decoration: underline; } }
+    }
+
+    .home-link {
+      display: block;
+      margin-top: 14px;
+      color: $color-teal;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      text-decoration: none;
+      &:hover { color: $color-gold; text-decoration: underline; }
+    }
+
+    
+  }
+}
+
+// Add this to your register.scss
+.dialect-error {
+  background-color: rgba(239, 68, 68, 0.1); // Light red
+  color: #b91c1c; // Dark red
+  padding: 12px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+
+  mat-icon {
+    color: #b91c1c;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Keyframes
+@keyframes float {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(50px, 20px) scale(1.1); }
+  100% { transform: translate(-30px, -40px) scale(0.9); }
+}
+@keyframes sound {
+  0%, 100% { transform: scaleY(0.5); }
+  50% { transform: scaleY(1); }
+}
+
+// Responsive
+@media (max-width: 900px) {
+  .glass-card { flex-direction: column; min-height: auto; width: 90%; margin: 20px 0; }
+  .brand-sidebar { padding: 40px 30px; text-align: center; border-radius: 24px 24px 0 0; .logo-container { justify-content: center; } .culture-note { text-align: right; } .watermark { display: none; } }
+  .form-side { padding: 40px 30px; }
+  .jusoor-form .form-row { flex-direction: column; gap: 0; } // Stack side-by-side inputs on phones
+}
+
+@media (max-width: 480px) {
+  .glass-card {
+    width: calc(100% - 20px) !important;
+    margin: 16px 0 !important;
+    border-radius: 18px !important;
+  }
+  .brand-sidebar {
+    padding: 24px 16px !important;
+    border-radius: 18px 18px 0 0 !important;
+    .tagline { font-size: 16px; }
+    .brand-name { font-size: 34px; }
+  }
+  .form-side {
+    padding: 24px 16px !important;
+    .form-header h2 { font-size: 24px; }
+  }
+}

@@ -1,0 +1,105 @@
+<main class="settings-page" dir="rtl">
+  <header class="settings-header">
+    <a routerLink="/home" class="back-link"><mat-icon>arrow_forward</mat-icon> العودة للرئيسية</a>
+    <div class="settings-title">
+      <span class="eyebrow">مساحتك في جُسور</span>
+      <h1>الإعدادات</h1>
+      <p>اضبط تجربتك بالطريقة التي تناسبك.</p>
+    </div>
+    <div class="settings-mark"><mat-icon>tune</mat-icon></div>
+  </header>
+
+  <section class="settings-grid">
+    <article class="settings-card preferences-card">
+      <div class="card-heading"><mat-icon>notifications_active</mat-icon><div><span>التجربة اليومية</span><h2>الإشعارات والصوت</h2></div></div>
+      <div class="setting-row">
+        <div class="setting-copy"><mat-icon>chat_bubble</mat-icon><div><strong>إشعارات الرسائل</strong><p>اعرف عندما يرسل لك أحدهم رسالة جديدة.</p></div></div>
+        <mat-slide-toggle [(ngModel)]="settings.messageNotifications" aria-label="إشعارات الرسائل"></mat-slide-toggle>
+      </div>
+      <div class="setting-row">
+        <div class="setting-copy"><mat-icon>volume_up</mat-icon><div><strong>المؤثرات الصوتية</strong><p>شغّل أصوات التفاعل والتنبيهات.</p></div></div>
+        <mat-slide-toggle [(ngModel)]="settings.soundEffects" aria-label="المؤثرات الصوتية"></mat-slide-toggle>
+      </div>
+    </article>
+
+    <article class="settings-card appearance-card">
+      <div class="card-heading"><mat-icon>dashboard_customize</mat-icon><div><span>طريقة العرض</span><h2>شكل المنصة</h2></div></div>
+      <div class="setting-row">
+        <div class="setting-copy"><mat-icon>view_agenda</mat-icon><div><strong>العرض المدمج</strong><p>قلّل المساحات لعرض محتوى أكثر في الصفحة.</p></div></div>
+        <mat-slide-toggle [(ngModel)]="settings.compactLayout" aria-label="العرض المدمج"></mat-slide-toggle>
+      </div>
+      <div class="setting-row">
+        <div class="setting-copy"><mat-icon>dark_mode</mat-icon><div><strong>الوضع الليلي (Dark Mode)</strong><p>مظهر داكن مريح للعين يقلل الإجهاد البصري.</p></div></div>
+        <mat-slide-toggle [(ngModel)]="settings.darkMode" aria-label="الوضع الليلي"></mat-slide-toggle>
+      </div>
+      <div class="preview-strip"><span></span><span></span><span></span><small>جُسورك، رسائلك، ولهجاتك في مكان واحد</small></div>
+    </article>
+
+    <article class="settings-card support-card">
+      <div class="card-heading">
+        <mat-icon>support_agent</mat-icon>
+        <div>
+          <span>المساعدة والاستفسارات</span>
+          <h2>الدعم الفني</h2>
+        </div>
+      </div>
+
+      <div class="support-body">
+        <p class="support-intro">
+          إذا واجهتك أي مشكلة فنية أو كان لديك استفسار أو اقتراح لتحسين المنصة، يسعدنا تواصلك مع فريق دعم جُسور مباشرة:
+        </p>
+
+        <div class="support-email-pill">
+          <div class="email-details">
+            <div class="email-icon-box">
+              <mat-icon>alternate_email</mat-icon>
+            </div>
+            <div class="email-text-wrap">
+              <span class="email-title">البريد الرسمي للدعم الفني</span>
+              <a [href]="'mailto:' + supportEmail" class="email-address" dir="ltr">{{ supportEmail }}</a>
+            </div>
+          </div>
+          <div class="email-actions">
+            <a [href]="'mailto:' + supportEmail" class="btn-email-link" title="مراسلتنا عبر البريد">
+              <mat-icon>mail</mat-icon>
+              <span>مراسلتنا</span>
+            </a>
+            <button type="button" class="btn-copy-email" (click)="copySupportEmail()" title="نسخ البريد الإلكتروني">
+              <mat-icon>content_copy</mat-icon>
+              <span>نسخ</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="support-note">
+          <mat-icon>verified_user</mat-icon>
+          <span>فريق الدعم متواجد للإجابة على جميع الاستفسارات ومساعدتك في حل أي مشكلة.</span>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <footer class="settings-actions">
+    <button mat-button (click)="resetSettings()">استعادة الافتراضي</button>
+    <button mat-flat-button class="save-button" (click)="saveSettings()"><mat-icon>check</mat-icon> حفظ الإعدادات</button>
+    <button mat-button class="delete-button" (click)="openDeleteDialog()"><mat-icon>delete_forever</mat-icon> حذف الحساب</button>
+  </footer>
+
+  <div *ngIf="deleteDialogOpen" class="dialog-backdrop" role="presentation" (click)="closeDeleteDialog()">
+    <section class="delete-dialog" role="alertdialog" aria-modal="true" aria-labelledby="delete-dialog-title" (click)="$event.stopPropagation()">
+      <div class="dialog-icon"><mat-icon>warning_amber</mat-icon></div>
+      <div class="dialog-content">
+        <h2 id="delete-dialog-title">هل تريد حذف حسابك؟</h2>
+        <p>سيؤدي هذا الإجراء إلى حذف حسابك وجميع بياناتك نهائيا، بما في ذلك الرسائل والتبادلات والتعليقات. لا يمكن التراجع عن هذا الإجراء.</p>
+      </div>
+      <div class="dialog-actions">
+        <button mat-button type="button" [disabled]="isDeletingAccount" (click)="closeDeleteDialog()">إلغاء</button>
+        <button mat-flat-button type="button" class="confirm-delete-button" [disabled]="isDeletingAccount" (click)="confirmDeleteAccount()">
+          <mat-icon *ngIf="!isDeletingAccount">delete_forever</mat-icon>
+          <mat-icon *ngIf="isDeletingAccount">hourglass_top</mat-icon>
+          {{ isDeletingAccount ? 'جار حذف الحساب...' : 'نعم، حذف الحساب' }}
+        </button>
+      </div>
+    </section>
+  </div>
+</main>

@@ -1,0 +1,433 @@
+<div class="jusoor-dashboard" dir="rtl">
+  @if (pendingDeleteId()) {
+    <div class="confirm-backdrop" (click)="cancelDelete()">
+      <section class="confirm-dialog" role="dialog" aria-modal="true" (click)="$event.stopPropagation()">
+        <div class="confirm-icon"><mat-icon>delete_outline</mat-icon></div>
+        <h2>حذف المقطع؟</h2>
+        <p>سيتم حذف هذا المقطع نهائياً من حسابك ولا يمكن التراجع عن هذا الإجراء.</p>
+        <div class="confirm-actions">
+          <button mat-button (click)="cancelDelete()">إلغاء</button>
+          <button mat-flat-button class="danger-action" (click)="deleteExchange(pendingDeleteId()!)">حذف نهائياً</button>
+        </div>
+      </section>
+    </div>
+  }
+
+  <div class="bg-shapes">
+    <div class="shape shape-teal"></div>
+    <div class="shape shape-gold"></div>
+  </div>
+
+  <mat-toolbar class="main-header">
+    <div class="brand">
+      <div class="sound-icon"><span></span><span></span><span></span></div>
+      <span class="logo-text">جُسور</span>
+    </div>
+    <span class="spacer"></span>
+    <button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      <span>أهلاً، {{ authService.currentUser()?.displayName || 'مستخدم' }}</span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/profile"><mat-icon>person</mat-icon><span>الملف الشخصي</span></button>
+      <button mat-menu-item routerLink="/settings"><mat-icon>settings</mat-icon><span>الإعدادات</span></button>
+      <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon><span>تسجيل الخروج</span></button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container" [class.sidebar-collapsed]="appSettings.settings().sidebarCollapsed">
+    <mat-sidenav mode="side" opened class="sidebar" [class.collapsed]="appSettings.settings().sidebarCollapsed">
+      <!-- Collapse toggle header -->
+      <div class="sidebar-top-bar">
+        <button class="sidebar-toggle-btn"
+                (click)="appSettings.toggleSidebar()"
+                [title]="appSettings.settings().sidebarCollapsed ? 'توسيع القائمة' : 'تصغير القائمة'"
+                type="button">
+          <mat-icon>{{ appSettings.settings().sidebarCollapsed ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+        </button>
+        <span class="sidebar-section-badge">القائمة</span>
+      </div>
+
+      <nav class="side-nav">
+        <!-- Navigation Section: تصفح -->
+        <div class="nav-section">
+          <span class="nav-section-title">التصفح</span>
+          <a routerLink="/home" routerLinkActive="active" class="nav-item" title="الرئيسية">
+            <div class="nav-icon-box"><mat-icon>home</mat-icon></div>
+            <span class="nav-label">الرئيسية</span>
+          </a>
+          <a routerLink="/explore" routerLinkActive="active" class="nav-item" title="استكشف اللهجات">
+            <div class="nav-icon-box"><mat-icon>explore</mat-icon></div>
+            <span class="nav-label">استكشف اللهجات</span>
+          </a>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Navigation Section: التواصل -->
+        <div class="nav-section">
+          <span class="nav-section-title">التواصل والمجتمع</span>
+          <a routerLink="/messages" routerLinkActive="active" class="nav-item" title="الرسائل">
+            <div class="nav-icon-box"><mat-icon>chat</mat-icon></div>
+            <span class="nav-label">الرسائل</span>
+          </a>
+          <a routerLink="/my-bridges" routerLinkActive="active" class="nav-item" title="جسوري">
+            <div class="nav-icon-box"><mat-icon>shortcut</mat-icon></div>
+            <span class="nav-label">جسوري</span>
+          </a>
+          <a routerLink="/community" routerLinkActive="active" class="nav-item" title="المجتمع">
+            <div class="nav-icon-box"><mat-icon>groups</mat-icon></div>
+            <span class="nav-label">المجتمع</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Sleek Action Capsule -->
+      <div class="sidebar-action-wrap">
+        <button class="new-clip-action-btn" (click)="openUploadDialog()" title="ساهم بمقطع جديد" type="button">
+          <div class="action-btn-icon">
+            <mat-icon>video_call</mat-icon>
+          </div>
+          <span class="action-btn-text">مقطع جديد</span>
+        </button>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="content" [style.margin-right.px]="appSettings.settings().sidebarCollapsed ? 68 : 215">
+      <div class="content-inner">
+
+        <!-- ══════════════ LUXURY HERO SHOWCASE ══════════════ -->
+        <div class="profile-hero-lux">
+          <div class="hero-backdrop-glow"></div>
+          
+          <div class="hero-main-row">
+            <div class="avatar-col">
+              <div class="avatar-ring-lux">
+                <div class="avatar-inner">
+                  @if (authService.currentUser()?.profileImage) {
+                    <img [src]="authService.currentUser()?.profileImage" alt="صورة الملف الشخصي" />
+                  } @else {
+                    <mat-icon class="default-avatar-icon">person</mat-icon>
+                  }
+                </div>
+                <div class="status-indicator-badge" title="نشط الآن">
+                  <mat-icon>check</mat-icon>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-meta-col">
+              <div class="hero-eyebrow">
+                <span class="eyebrow-pill"><mat-icon>hub</mat-icon> جسوري • مساحتي الشخصية</span>
+                <span class="reputation-badge">{{ userReputation().badge }}</span>
+              </div>
+              <h1 class="user-display-name">{{ authService.currentUser()?.displayName || 'مستخدم جُسور' }}</h1>
+              <p class="user-email-text">{{ authService.currentUser()?.email }}</p>
+
+              <div class="hero-badges-row">
+                <span class="role-chip rank-chip">
+                  <mat-icon>military_tech</mat-icon>
+                  {{ userReputation().title }}
+                </span>
+                <span class="role-chip score-chip">
+                  <mat-icon>local_fire_department</mat-icon>
+                  {{ userReputation().score }} نقطة تفاعل
+                </span>
+                <span class="role-chip dialect-chip">
+                  <mat-icon>translate</mat-icon>
+                  {{ stats().dialectsContributed }} لهجات مساهم بها
+                </span>
+              </div>
+            </div>
+
+            <div class="hero-actions-col">
+              <button mat-stroked-button class="glass-action-btn" routerLink="/profile">
+                <mat-icon>edit_note</mat-icon>
+                <span>تعديل الملف</span>
+              </button>
+              <button mat-flat-button class="primary-action-btn" (click)="openUploadDialog()">
+                <mat-icon>video_call</mat-icon>
+                <span>مقطع جديد</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ══════════════ 4 KPI STATS CARDS ══════════════ -->
+        <div class="stats-grid-lux">
+          <div class="kpi-card uploads-kpi">
+            <div class="kpi-icon-wrap"><mat-icon>cloud_upload</mat-icon></div>
+            <div class="kpi-data">
+              <span class="kpi-number">{{ stats().totalUploads }}</span>
+              <span class="kpi-label">مقطع تم رفعه</span>
+            </div>
+            <div class="kpi-watermark"><mat-icon>cloud_upload</mat-icon></div>
+          </div>
+
+          <div class="kpi-card likes-kpi">
+            <div class="kpi-icon-wrap"><mat-icon>favorite</mat-icon></div>
+            <div class="kpi-data">
+              <span class="kpi-number">{{ stats().totalLikes }}</span>
+              <span class="kpi-label">إعجاب تم تلقيه</span>
+            </div>
+            <div class="kpi-watermark"><mat-icon>favorite</mat-icon></div>
+          </div>
+
+          <div class="kpi-card comments-kpi">
+            <div class="kpi-icon-wrap"><mat-icon>question_answer</mat-icon></div>
+            <div class="kpi-data">
+              <span class="kpi-number">{{ stats().totalComments }}</span>
+              <span class="kpi-label">تعليق ومناقشة</span>
+            </div>
+            <div class="kpi-watermark"><mat-icon>question_answer</mat-icon></div>
+          </div>
+
+          <div class="kpi-card dialects-kpi">
+            <div class="kpi-icon-wrap"><mat-icon>travel_explore</mat-icon></div>
+            <div class="kpi-data">
+              <span class="kpi-number">{{ stats().dialectsContributed }}</span>
+              <span class="kpi-label">لهجة ساهمت بها</span>
+            </div>
+            <div class="kpi-watermark"><mat-icon>travel_explore</mat-icon></div>
+          </div>
+        </div>
+
+        <!-- ══════════════ SEGMENTED TABS NAV ══════════════ -->
+        <div class="section-tabs-bar">
+          <div class="tabs-capsule">
+            <button class="tab-pill" [class.active]="activeTab() === 'my-clips'" (click)="activeTab.set('my-clips')">
+              <mat-icon>video_library</mat-icon>
+              <span>مقاطعي المرفوعة</span>
+              <span class="tab-count-badge">{{ myExchanges().length }}</span>
+            </button>
+            <button class="tab-pill" [class.active]="activeTab() === 'liked-clips'" (click)="activeTab.set('liked-clips')">
+              <mat-icon>favorite</mat-icon>
+              <span>المقاطع التي أعجبتني</span>
+              <span class="tab-count-badge highlight-count">{{ likedExchanges().length }}</span>
+            </button>
+            <button class="tab-pill" [class.active]="activeTab() === 'learning'" (click)="activeTab.set('learning')">
+              <mat-icon>auto_stories</mat-icon>
+              <span>مسيرة التعلم</span>
+              <span class="tab-count-badge">{{ learningDialects().length }}</span>
+            </button>
+          </div>
+          
+          @if (activeTab() === 'my-clips') {
+            <button mat-flat-button class="quick-add-btn" (click)="openUploadDialog()">
+              <mat-icon>add</mat-icon>
+              <span>إضافة مقطع</span>
+            </button>
+          }
+        </div>
+
+        <!-- ══════════════ TAB 1: MY EXCHANGES ══════════════ -->
+        @if (activeTab() === 'my-clips') {
+          <div class="tab-content-panel">
+            @if (isLoading()) {
+              <div class="loading-state-lux">
+                <mat-progress-bar mode="indeterminate" class="lux-progress"></mat-progress-bar>
+                <p>جارٍ تحميل مقاطعك الخاصة...</p>
+              </div>
+            } @else if (myExchanges().length === 0) {
+              <div class="empty-state-lux">
+                <div class="empty-icon-halo">
+                  <mat-icon>movie_filter</mat-icon>
+                </div>
+                <h3>لم ترفع أي مقطع بعد</h3>
+                <p>صوتك ولهجتك جزء من هوية جُسور. شارك متحدثي العالم العربي بأول تسجيل صوتي أو مرئي!</p>
+                <button mat-flat-button class="lux-cta-btn" (click)="openUploadDialog()">
+                  <mat-icon>video_call</mat-icon>
+                  <span>أضف أول مساهمة الآن</span>
+                </button>
+              </div>
+            } @else {
+              <div class="exchanges-grid-lux">
+                @for (ex of myExchanges(); track ex.id) {
+                  <div class="exchange-card-lux" (click)="openPlayer(ex)">
+                    <div class="card-media-box" [class.is-audio]="ex.type === 'audio'">
+                      @if (exchangeService.hasCustomThumbnail(ex)) {
+                        <img class="media-thumb-img" [src]="ex.thumbnail" alt="" />
+                      } @else if (ex.type === 'audio') {
+                        <div class="audio-ambient-backdrop">
+                          <div class="waveform-bars">
+                            <span></span><span></span><span></span><span></span><span></span>
+                          </div>
+                        </div>
+                      }
+                      <div class="media-hover-glass">
+                        <div class="play-circle-btn">
+                          <mat-icon>{{ ex.type === 'audio' ? 'mic' : 'play_arrow' }}</mat-icon>
+                        </div>
+                      </div>
+                      <span class="dialect-pill-badge">{{ ex.flag }} {{ ex.dialect }}</span>
+                      <span class="type-pill-badge">{{ ex.type === 'video' ? '🎥 مرئي' : '🎙️ صوتي' }}</span>
+                    </div>
+
+                    <div class="card-body-lux">
+                      @if (editingId() === ex.id) {
+                        <div class="inline-edit-box" (click)="$event.stopPropagation()">
+                          <input class="inline-input" [(ngModel)]="editData.title" placeholder="عنوان المقطع" />
+                          <textarea class="inline-textarea" [(ngModel)]="editData.description" rows="2" placeholder="الوصف"></textarea>
+                          <div class="edit-btns-row">
+                            <button mat-flat-button class="save-btn" (click)="saveEditing(ex.id)">حفظ</button>
+                            <button mat-button class="cancel-btn" (click)="cancelEditing()">إلغاء</button>
+                          </div>
+                        </div>
+                      } @else {
+                        <h3 class="card-title-text">{{ ex.title }}</h3>
+                        @if (ex.description) {
+                          <p class="card-desc-text">{{ ex.description }}</p>
+                        }
+                        
+                        <div class="card-meta-bar">
+                          <div class="meta-stat-pill">
+                            <mat-icon class="stat-heart-icon">favorite</mat-icon>
+                            <span>{{ ex.likes }} إعجاب</span>
+                          </div>
+                          <div class="meta-stat-pill">
+                            <mat-icon>chat_bubble_outline</mat-icon>
+                            <span>{{ ex.commentCount ?? 0 }} تعليق</span>
+                          </div>
+                        </div>
+
+                        <div class="card-actions-bar" (click)="$event.stopPropagation()">
+                          <button mat-button class="card-action-btn edit" (click)="startEditing(ex)">
+                            <mat-icon>edit</mat-icon>
+                            <span>تعديل</span>
+                          </button>
+                          <button mat-button class="card-action-btn delete" (click)="requestDelete(ex.id)">
+                            <mat-icon>delete_outline</mat-icon>
+                            <span>حذف</span>
+                          </button>
+                        </div>
+                      }
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ══════════════ TAB 2: LIKED EXCHANGES ══════════════ -->
+        @if (activeTab() === 'liked-clips') {
+          <div class="tab-content-panel">
+            @if (isLoading()) {
+              <div class="loading-state-lux">
+                <mat-progress-bar mode="indeterminate" class="lux-progress"></mat-progress-bar>
+                <p>جارٍ تحميل المقاطع المفضلة...</p>
+              </div>
+            } @else if (likedExchanges().length === 0) {
+              <div class="empty-state-lux">
+                <div class="empty-icon-halo red-halo">
+                  <mat-icon>favorite_border</mat-icon>
+                </div>
+                <h3>لم تضع إعجاباً بعد</h3>
+                <p>استكشف المقاطع في الصفحة الرئيسية وضع تفاعلك ❤️ وسيتم حفظها هنا دائماً لتتمكن من الرجوع إليها وإدارتها في أي وقت!</p>
+                <a routerLink="/home" mat-flat-button class="lux-cta-btn">
+                  <mat-icon>explore</mat-icon>
+                  <span>استكشف المقاطع وتفاعل</span>
+                </a>
+              </div>
+            } @else {
+              <div class="exchanges-grid-lux">
+                @for (ex of likedExchanges(); track ex.id) {
+                  <div class="exchange-card-lux liked-item-card" (click)="openPlayer(ex)">
+                    <div class="card-media-box" [class.is-audio]="ex.type === 'audio'">
+                      @if (exchangeService.hasCustomThumbnail(ex)) {
+                        <img class="media-thumb-img" [src]="ex.thumbnail" alt="" />
+                      } @else if (ex.type === 'audio') {
+                        <div class="audio-ambient-backdrop">
+                          <div class="waveform-bars">
+                            <span></span><span></span><span></span><span></span><span></span>
+                          </div>
+                        </div>
+                      }
+                      <div class="media-hover-glass">
+                        <div class="play-circle-btn">
+                          <mat-icon>{{ ex.type === 'audio' ? 'mic' : 'play_arrow' }}</mat-icon>
+                        </div>
+                      </div>
+                      <span class="dialect-pill-badge">{{ ex.flag }} {{ ex.dialect }}</span>
+                      <span class="type-pill-badge">{{ ex.type === 'video' ? '🎥 مرئي' : '🎙️ صوتي' }}</span>
+                    </div>
+
+                    <div class="card-body-lux">
+                      <h3 class="card-title-text">{{ ex.title }}</h3>
+                      @if (ex.description) {
+                        <p class="card-desc-text">{{ ex.description }}</p>
+                      }
+
+                      <div class="liked-card-footer">
+                        <span class="author-hint">بواسطة: {{ ex.user }}</span>
+                        
+                        <!-- Toggle unlike button -->
+                        <button class="active-reaction-btn" (click)="$event.stopPropagation(); onToggleLike(ex)" title="اضغط لإلغاء التفاعل">
+                          <mat-icon>favorite</mat-icon>
+                          <span>{{ ex.likes }} (إلغاء التفاعل)</span>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        }
+
+        <!-- ══════════════ TAB 3: LEARNING JOURNEY ══════════════ -->
+        @if (activeTab() === 'learning') {
+          <div class="tab-content-panel">
+            <div class="learning-header-box">
+              <div class="learning-intro">
+                <h2>مسيرة التطور وإتقان اللهجات العربية</h2>
+                <p>تابع تقدمك واستمع لمقاطع إضافية لتعزيز ثقتك في فهم نطق وتراكيب اللهجات المختلفة.</p>
+              </div>
+              <a routerLink="/explore" class="browse-all-link">
+                <span>استكشف جميع اللهجات</span>
+                <mat-icon>arrow_back</mat-icon>
+              </a>
+            </div>
+
+            <div class="learning-grid-lux">
+              @for (d of learningDialects(); track d.nameAr) {
+                <div class="learning-card-lux">
+                  <div class="d-top-row">
+                    <span class="dialect-flag-circle">{{ d.flag }}</span>
+                    <div class="d-title-group">
+                      <h4>{{ d.nameAr }}</h4>
+                      <span class="d-level-tag">{{ d.level || 'مستوى التعلم' }}</span>
+                    </div>
+                    <span class="d-percent-tag">{{ d.progress }}%</span>
+                  </div>
+
+                  <div class="progress-track-lux">
+                    <div class="progress-fill-glow" [style.width.%]="d.progress"></div>
+                  </div>
+
+                  <div class="d-card-footer">
+                    <span class="d-hint-text">تابع الاستماع للمزيد من المقاطع لرفع مستواك</span>
+                    <a routerLink="/explore" class="d-action-link">
+                      <span>تمارين اللهجة</span>
+                      <mat-icon>arrow_forward</mat-icon>
+                    </a>
+                  </div>
+                </div>
+              }
+            </div>
+
+            <div class="learning-inspiration-banner">
+              <div class="banner-icon"><mat-icon>lightbulb</mat-icon></div>
+              <div class="banner-text">
+                <strong>نصيحة جُسور لليوم:</strong>
+                <p>ركز على الاستماع للأمثال الشعبية والنبرات الصوتية أولاً، ففهم السياق الثقافي يساعدك على التقاط المعاني بسرعة أكبر!</p>
+              </div>
+            </div>
+          </div>
+        }
+
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

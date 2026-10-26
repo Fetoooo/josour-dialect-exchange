@@ -1,0 +1,55 @@
+<div class="detail-page" dir="rtl">
+  <header class="detail-header">
+    <a routerLink="/explore" class="back-link"><mat-icon>arrow_forward</mat-icon> العودة إلى اللهجات</a>
+    <a routerLink="/home" class="home-link"><mat-icon>home</mat-icon> الرئيسية</a>
+  </header>
+
+  <main>
+    <section class="hero" [style.background-image]="'url(' + dialect.image + ')'">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <span class="flag">{{ dialect.flag }}</span>
+        <span class="eyebrow">دليل اللهجة والبلد</span>
+        <h1>{{ dialect.nameAr }}</h1>
+        <p>{{ dialect.nameEn }} · {{ dialect.country }}</p>
+      </div>
+    </section>
+
+    <section class="intro-grid">
+      <article class="intro-copy">
+        <span class="section-kicker">بوابة ثقافية</span>
+        <h2>اسمع اللهجة، وافهم الحكاية وراءها</h2>
+        <p>{{ dialect.overview }}</p>
+        <p>{{ dialect.identity }}</p>
+      </article>
+      <aside class="phrase-card">
+        <span>ابدأ بهذه الجملة</span>
+        <strong>{{ dialect.phrase }}</strong>
+        <small>{{ dialect.meaning }}</small>
+      </aside>
+    </section>
+
+    <section class="sound-section">
+      <div class="section-heading"><span class="section-kicker">مفتاح النطق</span><h2>ماذا تلاحظ؟</h2></div>
+      <p>{{ dialect.sounds }}</p>
+    </section>
+
+    <section class="learning-section">
+      <div class="section-heading"><span class="section-kicker">خطة صغيرة</span><h2>نصائح لإتقان {{ dialect.nameAr }}</h2></div>
+      <div class="tip-grid">
+        @for (tip of dialect.tips; let i = $index; track tip) {
+          <article class="tip-card"><span>{{ i + 1 }}</span><p>{{ tip }}</p></article>
+        }
+      </div>
+    </section>
+
+    <section class="phrases-section">
+      <div class="section-heading"><span class="section-kicker">قاموس البداية</span><h2>ثلاث كلمات ستسمعها كثيراً</h2></div>
+      <div class="phrase-grid">
+        @for (phrase of dialect.phrases; track phrase.dialect) {
+          <article class="mini-phrase"><strong>{{ phrase.dialect }}</strong><span>{{ phrase.meaning }}</span></article>
+        }
+      </div>
+    </section>
+  </main>
+</div>

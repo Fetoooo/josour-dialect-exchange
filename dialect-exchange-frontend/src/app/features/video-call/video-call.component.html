@@ -1,0 +1,63 @@
+<div class="call-overlay" dir="rtl" [class.audio-only]="chatService.callType() === 'audio'">
+
+  <!-- VIDEO MODE: remote full-screen video -->
+  @if (chatService.callType() === 'video') {
+    <video #remoteVideo class="remote-video" autoplay playsinline [muted]="false"></video>
+
+    @if (!chatService.remoteStream()) {
+      <div class="connecting-placeholder">
+        <div class="pulse-avatar">{{ chatService.remoteUser()?.name?.charAt(0) }}</div>
+        <p class="connecting-text">جارٍ الاتصال...</p>
+      </div>
+    }
+  }
+
+  <!-- AUDIO MODE: big avatar UI -->
+  @if (chatService.callType() === 'audio') {
+    <div class="audio-call-ui">
+      <div class="audio-avatar" [class.speaking]="!!chatService.remoteStream()">
+        {{ chatService.remoteUser()?.name?.charAt(0) }}
+      </div>
+      <p class="audio-name">{{ chatService.remoteUser()?.name }}</p>
+      <p class="audio-status">{{ chatService.remoteStream() ? 'متصل' : 'جارٍ الاتصال...' }}</p>
+      <!-- Audio element for remote stream (unmuted, playing in background) -->
+      <audio #remoteAudio autoplay playsinline [muted]="false" class="remote-audio-sink"></audio>
+    </div>
+  }
+
+  <!-- Call info bar -->
+  <div class="call-info-bar">
+    <span class="remote-name">{{ chatService.remoteUser()?.name }}</span>
+    <span class="call-timer">{{ formattedDuration }}</span>
+  </div>
+
+  <!-- Local video pip (video calls only) -->
+  @if (chatService.callType() === 'video') {
+    <div class="local-video-wrapper">
+      <video #localVideo class="local-video" autoplay playsinline muted></video>
+      @if (isCameraOff()) {
+        <div class="camera-off-overlay"><mat-icon>videocam_off</mat-icon></div>
+      }
+    </div>
+  }
+
+  <!-- Controls -->
+  <div class="call-controls">
+    <button class="ctrl-btn" [class.active]="isMuted()" (click)="toggleMute()">
+      <mat-icon>{{ isMuted() ? 'mic_off' : 'mic' }}</mat-icon>
+    </button>
+
+    <button class="ctrl-btn end-call" (click)="endCall()">
+      <mat-icon>call_end</mat-icon>
+    </button>
+
+    @if (chatService.callType() === 'video') {
+      <button class="ctrl-btn" [class.active]="isCameraOff()" (click)="toggleCamera()">
+        <mat-icon>{{ isCameraOff() ? 'videocam_off' : 'videocam' }}</mat-icon>
+      </button>
+    } @else {
+      <!-- Placeholder to keep layout symmetric -->
+      <div class="ctrl-btn-placeholder"></div>
+    }
+  </div>
+</div>

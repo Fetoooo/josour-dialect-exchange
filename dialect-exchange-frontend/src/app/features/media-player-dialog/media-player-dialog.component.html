@@ -1,0 +1,54 @@
+<div class="player-dialog" dir="rtl">
+
+  <!-- Header -->
+  <div class="player-header">
+    <div class="media-info">
+      <span class="dialect-tag">{{ data.flag }} {{ data.dialect }}</span>
+      <h2 class="media-title">{{ data.title }}</h2>
+      <p class="media-author">بواسطة {{ data.user }}</p>
+    </div>
+    <button mat-icon-button class="close-btn" (click)="close()">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
+  <!-- ══ Video Player ══════════════════════════════════════ -->
+  @if (data.type === 'video') {
+    <div class="video-wrapper">
+      <video
+        #mediaEl
+        class="video-player"
+        [src]="data.mediaUrl"
+        controls
+        autoplay
+        playsinline
+        controlsList="nodownload">
+        متصفحك لا يدعم تشغيل الفيديو.
+      </video>
+    </div>
+  }
+
+  <!-- ══ Audio Player ══════════════════════════════════════ -->
+  @if (data.type === 'audio' || data.type === 'voice_note') {
+    <div class="audio-wrapper">
+      <div class="audio-visual">
+        <div class="soundwave-anim">
+          <span></span><span></span><span></span>
+          <span></span><span></span><span></span>
+          <span></span><span></span>
+        </div>
+        <mat-icon class="mic-icon">mic</mat-icon>
+      </div>
+      <audio
+        #mediaEl
+        class="audio-player"
+        [src]="data.mediaUrl"
+        controls
+        autoplay
+        controlsList="nodownload">
+        متصفحك لا يدعم تشغيل الصوت.
+      </audio>
+    </div>
+  }
+
+</div>

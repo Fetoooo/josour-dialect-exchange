@@ -1,0 +1,170 @@
+<!-- Floating Chat Launcher Button -->
+<button
+  class="ai-floating-trigger"
+  [class.active]="aiService.isOpen()"
+  (click)="toggleChat()"
+  [attr.aria-label]="aiService.isOpen() ? 'إغلاق المساعد' : 'فتح المساعد'"
+  title="مساعد جسور"
+  type="button">
+  
+  @if (aiService.isOpen()) {
+    <mat-icon class="trigger-icon">close</mat-icon>
+  } @else {
+    <div class="ai-trigger-content">
+      <div class="ai-main-icon">
+        <mat-icon>forum</mat-icon>
+      </div>
+      <div class="ai-soundwave">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  }
+
+  @if (!aiService.isOpen() && aiService.unreadCount() > 0) {
+    <span class="unread-badge">{{ aiService.unreadCount() }}</span>
+  }
+</button>
+
+<!-- Chat Window Drawer / Modal -->
+@if (aiService.isOpen()) {
+  <div class="ai-chat-window" dir="rtl" role="dialog" aria-modal="true" aria-labelledby="assistant-title">
+    
+    <!-- Custom Professional Confirmation Modal for Clearing History -->
+    @if (showConfirmClear()) {
+      <div class="confirm-overlay">
+        <div class="confirm-card">
+          <div class="confirm-icon-box">
+            <mat-icon>delete_sweep</mat-icon>
+          </div>
+          <h4 class="confirm-heading">مسح سجل المحادثة</h4>
+          <p class="confirm-message">هل ترغب في مسح جميع الرسائل السابقة وبدء جلسة جديدة؟</p>
+          <div class="confirm-button-row">
+            <button type="button" class="btn-confirm-cancel" (click)="cancelClearConfirm()">
+              إلغاء
+            </button>
+            <button type="button" class="btn-confirm-delete" (click)="confirmClearHistory()">
+              مسح السجل
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Header -->
+    <div class="ai-chat-header">
+      <div class="header-info">
+        <div class="avatar-ring">
+          <mat-icon>account_balance</mat-icon>
+          <span class="online-dot"></span>
+        </div>
+        <div class="header-texts">
+          <h3 id="assistant-title" class="title">مساعد جُسور</h3>
+          <span class="subtitle">خبير اللهجات ومرشد المنصة</span>
+        </div>
+      </div>
+
+      <div class="header-actions">
+        <button
+          type="button"
+          class="btn-icon"
+          (click)="openClearConfirm()"
+          title="مسح المحادثة"
+          aria-label="مسح المحادثة">
+          <mat-icon>delete_outline</mat-icon>
+        </button>
+        <button
+          type="button"
+          class="btn-icon"
+          (click)="closeChat()"
+          title="إغلاق"
+          aria-label="إغلاق النافذة">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Messages Container -->
+    <div class="ai-chat-body" #messagesScroll>
+      <div class="messages-list">
+        @for (msg of aiService.messages(); track msg.id) {
+          <div
+            class="message-row"
+            [attr.data-id]="msg.id"
+            [class.user-row]="msg.role === 'user'"
+            [class.assistant-row]="msg.role === 'assistant'">
+            @if (msg.role === 'assistant') {
+              <div class="msg-avatar">
+                <mat-icon>record_voice_over</mat-icon>
+              </div>
+            }
+
+            <div class="bubble" [class.error-bubble]="msg.isError">
+              <div class="bubble-content" [innerHTML]="formatMessage(msg.content)"></div>
+              <span class="msg-time">{{ msg.timestamp | date:'h:mm a' }}</span>
+            </div>
+          </div>
+        }
+
+        <!-- Typing Indicator -->
+        @if (aiService.isLoading()) {
+          <div class="message-row assistant-row">
+            <div class="msg-avatar">
+              <mat-icon>record_voice_over</mat-icon>
+            </div>
+            <div class="bubble typing-bubble">
+              <div class="typing-indicator">
+                <span></span>
+                <span></span>
+                <span></span>
+              </div>
+              <span class="typing-label">جاري كتابة الرد...</span>
+            </div>
+          </div>
+        }
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="suggestions-section">
+        <div class="suggestions-header">
+          <mat-icon>help_outline</mat-icon>
+          <span>أسئلة شائعة ومقترحة:</span>
+        </div>
+        <div class="chips-container">
+          @for (chip of suggestionChips; track chip.label) {
+            <button
+              type="button"
+              class="suggestion-chip"
+              (click)="selectSuggestion(chip.text)"
+              [disabled]="aiService.isLoading()">
+              {{ chip.label }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Input Footer -->
+    <div class="ai-chat-footer">
+      <form class="input-form" (ngSubmit)="send()">
+        <textarea
+          #inputField
+          class="chat-input"
+          rows="1"
+          placeholder="اكتب سؤالك عن اللهجات أو المنصة هنا..."
+          [(ngModel)]="userInput"
+          name="userInput"
+          (keydown)="handleKeyDown($event)"
+          [disabled]="aiService.isLoading()"
+          aria-label="رسالتك للمساعد"></textarea>
+
+        <button
+          type="submit"
+          class="send-btn"
+          [disabled]="!userInput.trim() || aiService.isLoading()"
+          aria-label="إرسال">
+          <mat-icon>send</mat-icon>
+        </button>
+      </form>
+    </div>
+  </div>
+}

@@ -1,0 +1,124 @@
+$teal: #0d9488;
+$gold: #d97706;
+$slate-dark: #0f172a;
+$slate-muted: #64748b;
+
+.mobile-bottom-bar {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .mobile-bottom-bar {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    height: 62px;
+    z-index: 9990;
+    background: rgba(255, 255, 255, 0.94);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(226, 232, 240, 0.9);
+    box-shadow: 0 -4px 20px rgba(15, 23, 42, 0.07);
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 0 4px;
+    padding-bottom: env(safe-area-inset-bottom, 0);
+    box-sizing: border-box;
+    font-family: 'Cairo', sans-serif;
+  }
+
+  .m-nav-item {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 6px 0;
+    text-decoration: none;
+    color: $slate-muted;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 12px;
+    -webkit-tap-highlight-color: transparent;
+
+    .m-icon-box {
+      width: 32px;
+      height: 28px;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      transition: all 0.2s ease;
+
+      mat-icon {
+        font-size: 22px;
+        width: 22px;
+        height: 22px;
+        transition: transform 0.2s ease;
+      }
+    }
+
+    .m-label {
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1.1;
+      max-width: 100%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: color 0.2s ease;
+    }
+
+    &:active {
+      transform: scale(0.94);
+    }
+
+    &.active {
+      color: $teal;
+
+      .m-icon-box {
+        background: rgba($teal, 0.12);
+        color: $teal;
+
+        mat-icon {
+          transform: translateY(-1px);
+        }
+      }
+
+      .m-label {
+        font-weight: 800;
+        color: $teal;
+      }
+    }
+  }
+}
+
+:host-context(body.dark-theme),
+:host-context(html.dark-theme) {
+  @media (max-width: 768px) {
+    .mobile-bottom-bar {
+      background: rgba(15, 23, 42, 0.94);
+      border-top-color: rgba(51, 65, 85, 0.8);
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.35);
+    }
+
+    .m-nav-item {
+      color: #94a3b8;
+
+      &.active {
+        color: #2dd4bf;
+
+        .m-icon-box {
+          background: rgba(45, 212, 191, 0.18);
+          color: #2dd4bf;
+        }
+
+        .m-label {
+          color: #2dd4bf;
+        }
+      }
+    }
+  }
+}

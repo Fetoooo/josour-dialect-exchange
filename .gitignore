@@ -1,0 +1,77 @@
+# ==============================================================================
+# Josour (جُسور) — Root .gitignore
+# Suitable for .NET 9, Angular 19+, Visual Studio, VS Code, and DevSecOps
+# ==============================================================================
+
+## Visual Studio, Rider & IDEs
+.vs/
+.vscode/
+.idea/
+_ReSharper*/
+*.user
+*.userosscache
+*.sln.docstates
+*.suo
+*.DotSettings.user
+
+## Build results & Compiled Binaries
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.pdb
+*.dll
+*.exe
+
+## Publish & Deployment Artifacts
+[Pp]ublish/
+publish/
+*.zip
+*.tar.gz
+
+## Node.js & Angular Frontend
+node_modules/
+dist/
+.angular/
+.npm/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+## Generated frontend files inside API wwwroot
+DialectExchange.API/wwwroot/*.js
+DialectExchange.API/wwwroot/*.css
+DialectExchange.API/wwwroot/*.map
+DialectExchange.API/wwwroot/chunk-*
+DialectExchange.API/wwwroot/main-*
+DialectExchange.API/wwwroot/styles-*
+DialectExchange.API/wwwroot/index.html
+DialectExchange.API/wwwroot/web.config
+DialectExchange.API/wwwroot/uploads/
+
+## Environment-specific & Secret Configuration Files
+.env
+.env.*
+!.env.example
+.neon
+appsettings.Production.json
+appsettings.*.local.json
+appsettings.local.json
+*.secrets.json
+
+## Certificates & Private Keys
+*.pfx
+*.p12
+*.pem
+*.key
+*.cer
+*.crt
+
+## OS-generated files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+.Spotlight-V100
+.Trashes

@@ -1,0 +1,123 @@
+<div class="jusoor-wrapper" dir="rtl">
+  
+  <div class="bg-shapes">
+    <div class="shape shape-teal"></div>
+    <div class="shape shape-gold"></div>
+    <div class="shape shape-blue"></div>
+  </div>
+
+  <div class="glass-card register-card">
+    
+    <div class="brand-sidebar">
+      <div class="brand-content">
+        <div class="logo-container">
+          <div class="soundwave">
+            <span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span><span class="bar"></span>
+          </div>
+          <h1 class="brand-name">جُسور</h1>
+        </div>
+        <p class="tagline">انضم إلينا وابدأ رحلة<br>التواصل بلا حواجز.</p>
+      </div>
+        <div class="culture-note">
+          <span class="culture-kicker">هل تعلم؟</span>
+          <h3>العربية عالم من الأصوات</h3>
+          <p>من الخليج إلى المغرب، تتنوع اللهجات العربية في كلماتها وإيقاعها وتعبيراتها، لكنها تلتقي في تاريخ وثقافة مشتركة.</p>
+          <div class="culture-facts">
+            <span>22 دولة عربية</span>
+            <span>لهجات لا تحصى</span>
+          </div>
+        </div>
+      <div class="watermark">لغة الضاد</div>
+    </div>
+
+    <div class="form-side">
+      <div class="form-header">
+        <h2>إنشاء حساب جديد</h2>
+        <p>املأ بياناتك لتبدأ في تبادل اللهجات</p>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #registerForm="ngForm" class="jusoor-form" autocomplete="off">
+        
+        <div class="form-row">
+          <!-- Full Name Validation (First and Last Name) -->
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>الاسم واللقب</mat-label>
+            <input matInput [(ngModel)]="registerData.displayName" name="register-display-name" type="text" [readonly]="!fieldsEnabled" (focus)="enableFields()"
+                   placeholder="مثال: أحمد محمود" required 
+                   pattern="^[a-zA-Z\u0600-\u06FF]{2,}\s+[a-zA-Z\u0600-\u06FF]{2,}.*$"
+                   #nameInput="ngModel">
+            <mat-icon matPrefix>person_outline</mat-icon>
+            <mat-error *ngIf="nameInput.errors?.['pattern']">الرجاء إدخال الاسم الأول والأخير بشكل صحيح</mat-error>
+          </mat-form-field>
+
+          <!-- Email Validation (Strict format) -->
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>البريد الإلكتروني</mat-label>
+            <input matInput [(ngModel)]="registerData.email" name="register-email" type="email" [readonly]="!fieldsEnabled" (focus)="enableFields()"
+            placeholder="name@domain.com" required
+            #emailInput="ngModel">
+            <mat-icon matPrefix>alternate_email</mat-icon>
+            <mat-error *ngIf="emailInput.errors?.['email']">صيغة البريد الإلكتروني غير صالحة</mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="input-wrapper">
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>كلمة المرور</mat-label>
+            <input matInput [(ngModel)]="registerData.password" name="register-password" type="password" autocomplete="new-password" [readonly]="!fieldsEnabled" (focus)="enableFields()"
+                   placeholder="••••••••" required
+                   pattern="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
+                   #passwordInput="ngModel">
+            <mat-icon matPrefix>lock_outline</mat-icon>
+            <mat-error *ngIf="passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)">
+              يجب أن تحتوي على 8 أحرف، حرف كبير، حرف صغير، رقم، ورمز خاص
+            </mat-error>
+          </mat-form-field>
+        </div>
+
+        <div class="form-row">
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>لهجتك الأم</mat-label>
+            <mat-select [(ngModel)]="registerData.nativeDialect" name="nativeDialect" required>
+              <mat-option *ngFor="let dialect of dialects" [value]="dialect.id">
+                {{ dialect.emoji }} {{ dialect.nameAr }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>record_voice_over</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="half-width">
+            <mat-label>اللهجة التي تود تعلمها</mat-label>
+            <mat-select [(ngModel)]="registerData.learningDialect" name="learningDialect" required>
+              <mat-option *ngFor="let dialect of dialects" [value]="dialect.id">
+                {{ dialect.emoji }} {{ dialect.nameAr }}
+              </mat-option>
+            </mat-select>
+            <mat-icon matPrefix>school</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <!-- Custom Error for Dialect Conflict -->
+        <div class="dialect-error" *ngIf="isDialectSame()">
+          <mat-icon>warning</mat-icon>
+          <span>لا يمكن اختيار نفس اللهجة للهجة الأم واللهجة المراد تعلمها</span>
+        </div>
+
+        <!-- Submit Button is now disabled if dialects are the same -->
+        <button mat-flat-button class="submit-btn" 
+              [disabled]="!registerForm.valid || isLoading() || isDialectSame()">
+            <span *ngIf="!isLoading()">إنشاء الحساب</span>
+            <mat-spinner *ngIf="isLoading()" diameter="24" color="accent"></mat-spinner>
+        </button>
+
+        <div class="login-link">
+          لديك حساب بالفعل؟ <a routerLink="/login">سجل دخولك من هنا</a>
+        </div>
+
+        <a class="home-link" routerLink="/">العودة إلى الصفحة الرئيسية</a>
+
+      </form>
+    </div>
+
+  </div>
+</div>

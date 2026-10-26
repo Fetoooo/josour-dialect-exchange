@@ -1,0 +1,543 @@
+<div class="profile-page" dir="rtl">
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="loading-state">
+      <div class="luxury-loader">
+        <mat-spinner diameter="54"></mat-spinner>
+        <span>جارٍ تجهيز ملفك الشخصي...</span>
+      </div>
+    </div>
+  }
+
+  <!-- Main Profile View -->
+  @if (!isLoading() && profile()) {
+    <div class="profile-container">
+
+      <!-- ══════════════ HERO BANNER ══════════════ -->
+      <section class="profile-hero-card">
+        
+        <!-- Cover Photo Area -->
+        <div class="cover-wrapper" [class.has-custom-cover]="!!profile().coverImage">
+          @if (profile().coverImage) {
+            <img class="cover-img" [src]="profile().coverImage" alt="صورة الغلاف" />
+            <div class="cover-overlay"></div>
+          } @else {
+            <div class="cover-mesh-default">
+              <div class="mesh-sphere sphere-1"></div>
+              <div class="mesh-sphere sphere-2"></div>
+              <div class="mesh-sphere sphere-3"></div>
+              <div class="mesh-pattern"></div>
+              <div class="mesh-quote">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>جُسور • مساحتك لتبادل اللهجات العربية وثقافاتها</span>
+              </div>
+            </div>
+          }
+
+          <!-- Cover Action Bar -->
+          <div class="cover-actions-bar">
+            <button class="glass-icon-btn back-btn" (click)="goBack()" title="العودة للرئيسية">
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+
+            <div class="cover-control-pills">
+              @if (isUploadingCover()) {
+                <div class="uploading-pill">
+                  <mat-spinner diameter="18"></mat-spinner>
+                  <span>جارٍ رفع الغلاف...</span>
+                </div>
+              } @else {
+                <label class="cover-upload-pill" title="رفع صورة غلاف جديدة">
+                  <mat-icon>photo_camera</mat-icon>
+                  <span>{{ profile().coverImage ? 'تغيير الغلاف' : 'إضافة صورة غلاف' }}</span>
+                  <input type="file" accept="image/*" (change)="onCoverImageSelected($event)" hidden />
+                </label>
+
+                @if (profile().coverImage) {
+                  <button class="cover-delete-pill" (click)="deleteCoverImage()" title="إزالة صورة الغلاف">
+                    <mat-icon>delete_outline</mat-icon>
+                    <span>إزالة</span>
+                  </button>
+                }
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Identity & Bio Bar -->
+        <div class="profile-identity-bar">
+          
+          <!-- Avatar Section -->
+          <div class="avatar-wrapper">
+            <div class="avatar-glow-ring">
+              <div class="avatar-circle">
+                @if (profile().profileImage) {
+                  <img [src]="profile().profileImage" alt="صورة الملف الشخصي" />
+                } @else {
+                  <div class="avatar-fallback">
+                    <span>{{ profile().displayName?.charAt(0) || 'م' }}</span>
+                  </div>
+                }
+
+                @if (isUploadingAvatar()) {
+                  <div class="avatar-spinner-overlay">
+                    <mat-spinner diameter="32"></mat-spinner>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Avatar Action Badges -->
+            <div class="avatar-actions">
+              <label class="avatar-edit-badge" title="تغيير الصورة الشخصية">
+                <mat-icon>camera_alt</mat-icon>
+                <input type="file" accept="image/*" (change)="onProfileImageSelected($event)" hidden />
+              </label>
+
+              @if (profile().profileImage) {
+                <button class="avatar-delete-badge" (click)="deleteProfileImage()" title="حذف الصورة الشخصية">
+                  <mat-icon>close</mat-icon>
+                </button>
+              }
+            </div>
+          </div>
+
+          <!-- User Details Info -->
+          <div class="identity-info-box">
+            <div class="title-row">
+              <h1 class="user-display-name">
+                {{ profile().displayName }}
+                <mat-icon class="verified-icon" title="حساب موثق">verified</mat-icon>
+              </h1>
+
+              <div class="profile-badge-row">
+                @if (profile().nativeDialect) {
+                  <span class="dialect-highlight-pill" title="اللهجة الأم">
+                    <span class="flag-icon">{{ profile().nativeDialect.flag }}</span>
+                    <span class="dialect-name">لهجة {{ profile().nativeDialect.name }}</span>
+                    <span class="native-tag">الأصلية</span>
+                  </span>
+                }
+                @if (profile().country) {
+                  <span class="location-pill">
+                    <mat-icon>location_on</mat-icon>
+                    <span>{{ profile().country }}</span>
+                  </span>
+                }
+              </div>
+            </div>
+
+            <p class="user-email-text">
+              <mat-icon>mail_outline</mat-icon>
+              <span>{{ profile().email }}</span>
+            </p>
+
+            @if (profile().bioAr) {
+              <div class="user-bio-card">
+                <mat-icon class="quote-start">format_quote</mat-icon>
+                <p class="bio-text">{{ profile().bioAr }}</p>
+              </div>
+            } @else {
+              <div class="user-bio-card empty" (click)="startEditing()">
+                <mat-icon>edit_note</mat-icon>
+                <p>أضف نبذة تعريفية عنك ولهجتك ليراك المجتمع بشكل أفضل...</p>
+              </div>
+            }
+
+            <!-- Meta Quick Tags -->
+            <div class="meta-row">
+              <span class="meta-item">
+                <mat-icon>calendar_today</mat-icon>
+                <span>انضم في {{ profile().joinedAt | date:'MMMM yyyy' }}</span>
+              </span>
+              <span class="meta-item">
+                <mat-icon>public</mat-icon>
+                <span>ملف عام معتمد</span>
+              </span>
+              @if (profile().learningDialects?.length > 0) {
+                <span class="meta-item learning-preview">
+                  <mat-icon>school</mat-icon>
+                  <span>يتعلم: {{ profile().learningDialects.length }} لهجات</span>
+                </span>
+              }
+            </div>
+          </div>
+
+          <!-- Primary Actions -->
+          <div class="header-action-buttons">
+            <button class="primary-edit-btn" (click)="startEditing()">
+              <mat-icon>edit</mat-icon>
+              <span>تعديل الملف</span>
+            </button>
+            <button class="secondary-share-btn" (click)="copyProfileLink()" title="نسخ رابط الملف الشخصي">
+              <mat-icon>share</mat-icon>
+              <span>مشاركة</span>
+            </button>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ══════════════ STATS CARDS ══════════════ -->
+      <section class="stats-grid">
+        <div class="stat-card stat-teal">
+          <div class="stat-icon-circle">
+            <mat-icon>record_voice_over</mat-icon>
+          </div>
+          <div class="stat-data">
+            <span class="stat-num">{{ profile().exchangeCount }}</span>
+            <span class="stat-sub">مقطع منشور</span>
+          </div>
+          <div class="stat-progress-bar">
+            <div class="bar-fill" [style.width.%]="profile().exchangeCount > 0 ? 100 : 15"></div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-amber">
+          <div class="stat-icon-circle">
+            <mat-icon>favorite</mat-icon>
+          </div>
+          <div class="stat-data">
+            <span class="stat-num">{{ profile().totalLikes }}</span>
+            <span class="stat-sub">إعجاب مستلم</span>
+          </div>
+          <div class="stat-progress-bar">
+            <div class="bar-fill" [style.width.%]="profile().totalLikes > 0 ? 100 : 20"></div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-indigo">
+          <div class="stat-icon-circle">
+            <span class="flag-stat">{{ profile().nativeDialect?.flag ?? '🌐' }}</span>
+          </div>
+          <div class="stat-data">
+            <span class="stat-num text-sm">{{ profile().nativeDialect?.name ?? 'عامة' }}</span>
+            <span class="stat-sub">اللهجة الأم</span>
+          </div>
+          <div class="stat-progress-bar">
+            <div class="bar-fill" style="width: 100%;"></div>
+          </div>
+        </div>
+
+        <div class="stat-card stat-emerald">
+          <div class="stat-icon-circle">
+            <mat-icon>translate</mat-icon>
+          </div>
+          <div class="stat-data">
+            <span class="stat-num">{{ profile().learningDialects?.length ?? 0 }}</span>
+            <span class="stat-sub">لهجة يتعلمها</span>
+          </div>
+          <div class="stat-progress-bar">
+            <div class="bar-fill" [style.width.%]="((profile().learningDialects?.length ?? 0) / 6) * 100"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ══════════════ NAVIGATION TABS ══════════════ -->
+      <div class="profile-tabs-nav">
+        <button class="nav-tab-btn" [class.active]="activeTab() === 'exchanges'" (click)="activeTab.set('exchanges')">
+          <mat-icon>folder_open</mat-icon>
+          <span>مقاطعي المنشورة</span>
+          <span class="tab-badge">{{ profile().exchangeCount }}</span>
+        </button>
+
+        <button class="nav-tab-btn" [class.active]="activeTab() === 'dialects'" (click)="activeTab.set('dialects')">
+          <mat-icon>travel_explore</mat-icon>
+          <span>رحلتي اللغوية</span>
+          <span class="tab-badge">{{ (profile().learningDialects?.length ?? 0) + (profile().nativeDialect ? 1 : 0) }}</span>
+        </button>
+
+        <button class="nav-tab-btn" [class.active]="activeTab() === 'about'" (click)="activeTab.set('about')">
+          <mat-icon>person_outline</mat-icon>
+          <span>عن حسابي</span>
+        </button>
+      </div>
+
+      <!-- ══════════════ TAB 1: EXCHANGES ══════════════ -->
+      @if (activeTab() === 'exchanges') {
+        <section class="tab-panel">
+          
+          <!-- Filters & Header -->
+          <div class="tab-header-row">
+            <div>
+              <h3 class="panel-title">المقاطع والمشاركات</h3>
+              <p class="panel-subtitle">كل ما شاركته مع المجتمع الصوتي والمرئي في جُسور</p>
+            </div>
+
+            <div class="filter-pills-bar">
+              <button class="filter-pill" [class.active]="exchangeFilter() === 'all'" (click)="exchangeFilter.set('all')">
+                الكل ({{ profile().exchangeCount }})
+              </button>
+              <button class="filter-pill" [class.active]="exchangeFilter() === 'video'" (click)="exchangeFilter.set('video')">
+                <mat-icon>videocam</mat-icon> فيديو ({{ videoCount() }})
+              </button>
+              <button class="filter-pill" [class.active]="exchangeFilter() === 'audio'" (click)="exchangeFilter.set('audio')">
+                <mat-icon>mic</mat-icon> صوتيات ({{ audioCount() }})
+              </button>
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          @if (filteredExchanges().length === 0) {
+            <div class="empty-exchanges-card">
+              <div class="empty-icon-ring">
+                <mat-icon>auto_stories</mat-icon>
+              </div>
+              <h4>لا توجد مقاطع منشورة بعد</h4>
+              <p>شارك العالم تعبيرات ومفردات لهجتك الجميلة وافتح باباً للتعارف الثقافي!</p>
+              <a routerLink="/home" class="start-share-btn">
+                <mat-icon>add_circle_outline</mat-icon>
+                <span>شارك أول مقطع الآن</span>
+              </a>
+            </div>
+          }
+
+          <!-- Grid of Exchanges -->
+          <div class="exchanges-gallery-grid">
+            @for (ex of filteredExchanges(); track ex.id) {
+              <div class="modern-exchange-card">
+                <div class="card-media-banner">
+                  @if (exchangeService.hasCustomThumbnail(ex)) {
+                    <img class="ex-thumb-img" [src]="ex.thumbnail" alt="{{ ex.title }}" />
+                  } @else {
+                    <div class="ex-waveform-placeholder" [class.is-audio]="ex.type === 'audio'">
+                      <div class="sound-wave-bars">
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                      </div>
+                    </div>
+                  }
+
+                  <div class="media-type-tag" [class.video-type]="ex.type === 'video'">
+                    <mat-icon>{{ ex.type === 'audio' ? 'mic' : 'videocam' }}</mat-icon>
+                    <span>{{ ex.type === 'audio' ? 'صوتي' : 'فيديو' }}</span>
+                  </div>
+
+                  <div class="dialect-corner-pill">
+                    <span>{{ ex.flag }}</span>
+                    <span>{{ ex.dialect }}</span>
+                  </div>
+                </div>
+
+                <div class="card-content-body">
+                  <h4 class="ex-card-title">{{ ex.title }}</h4>
+                  @if (ex.description) {
+                    <p class="ex-card-desc">{{ ex.description }}</p>
+                  } @else {
+                    <p class="ex-card-desc placeholder">مقطع مميز وممتع من اللهجة {{ ex.dialect }}</p>
+                  }
+
+                  <div class="ex-card-footer">
+                    <div class="ex-stats">
+                      <span class="stat-pill like-stat">
+                        <mat-icon>favorite</mat-icon>
+                        <span>{{ ex.likes }}</span>
+                      </span>
+                      <span class="stat-pill comment-stat">
+                        <mat-icon>chat_bubble_outline</mat-icon>
+                        <span>{{ ex.commentCount }}</span>
+                      </span>
+                    </div>
+
+                    <span class="ex-date">{{ ex.createdAt | date:'shortDate' }}</span>
+                  </div>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <!-- ══════════════ TAB 2: DIALECT JOURNEY ══════════════ -->
+      @if (activeTab() === 'dialects') {
+        <section class="tab-panel">
+          <div class="journey-header">
+            <h3 class="panel-title">مسيرتك اللهجوية واللغوية</h3>
+            <p class="panel-subtitle">اللهجات التي تتقنها وتتحدث بها أو تسعى لتعلمها واكتساب أسرارها</p>
+          </div>
+
+          <div class="dialects-split-grid">
+            <!-- Native Dialect Card -->
+            <div class="dialect-category-box native-box">
+              <div class="category-header">
+                <span class="pill-kicker">لهجتك الأم الأصلية</span>
+                <h4>الهوية والجذور</h4>
+              </div>
+
+              @if (profile().nativeDialect) {
+                <div class="native-dialect-showcase">
+                  <span class="big-flag">{{ profile().nativeDialect.flag }}</span>
+                  <div class="native-dialect-meta">
+                    <h5>اللهجة {{ profile().nativeDialect.name }}</h5>
+                    <p>لهجتك الأساسية التي تمثل ثقافتك وتشارك كنوزها وتعبيراتها مع باقي أفراد المجتمع.</p>
+                  </div>
+                </div>
+              } @else {
+                <div class="no-dialect-selected" (click)="startEditing()">
+                  <mat-icon>add_location_alt</mat-icon>
+                  <span>لم تحدد لهجتك الأم بعد، انقر لتحديدها الآن</span>
+                </div>
+              }
+            </div>
+
+            <!-- Learning Dialects Card -->
+            <div class="dialect-category-box learning-box">
+              <div class="category-header">
+                <span class="pill-kicker">اللهجات قيد الاستكشاف</span>
+                <h4>رحلة التعلّم والشغف</h4>
+              </div>
+
+              @if (profile().learningDialects?.length > 0) {
+                <div class="learning-dialects-list">
+                  @for (ld of profile().learningDialects; track ld.id) {
+                    <div class="learning-dialect-pill">
+                      <span class="ld-flag">{{ ld.flag }}</span>
+                      <span class="ld-name">اللهجة {{ ld.name }}</span>
+                      <mat-icon class="ld-sparkle">auto_awesome</mat-icon>
+                    </div>
+                  }
+                </div>
+              } @else {
+                <div class="no-dialect-selected" (click)="startEditing()">
+                  <mat-icon>school</mat-icon>
+                  <span>لم تختر لهجات للتعلم بعد، انقر لتوسيع آفاقك</span>
+                </div>
+              }
+            </div>
+          </div>
+        </section>
+      }
+
+      <!-- ══════════════ TAB 3: ABOUT ME ══════════════ -->
+      @if (activeTab() === 'about') {
+        <section class="tab-panel">
+          <div class="about-grid">
+            <div class="about-card glass-panel">
+              <h3 class="panel-title">تفاصيل الحساب</h3>
+              <div class="about-details-list">
+                <div class="detail-row">
+                  <span class="detail-label">الاسم المعروض:</span>
+                  <span class="detail-val">{{ profile().displayName }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">البريد الإلكتروني:</span>
+                  <span class="detail-val">{{ profile().email }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">البلد / الإقامة:</span>
+                  <span class="detail-val">{{ profile().country || 'غير محدد' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">تاريخ الانضمام:</span>
+                  <span class="detail-val">{{ profile().joinedAt | date:'fullDate' }}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">حالة الحساب:</span>
+                  <span class="detail-val active-status">
+                    <mat-icon>check_circle</mat-icon> نشط وموثق
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="about-card glass-panel quote-statement-card">
+              <mat-icon class="statement-icon">wb_sunny</mat-icon>
+              <h4>رسالتنا في جُسور</h4>
+              <p>“كل لهجة هي نافذة على ذاكرة شعب ودفء مشاعره. عبر مشاركتك وتفاعلك، نمد جسور المحبة بين كل الأقطار العربية.”</p>
+              <button class="edit-profile-trigger-btn" (click)="startEditing()">
+                <mat-icon>edit</mat-icon>
+                <span>تحديث البيانات الشخصية</span>
+              </button>
+            </div>
+          </div>
+        </section>
+      }
+
+    </div>
+  }
+
+  <!-- ══════════════ EDIT PROFILE MODAL ══════════════ -->
+  @if (isEditing()) {
+    <div class="edit-modal-backdrop" (click)="cancelEditing()">
+      <div class="edit-modal-card" (click)="$event.stopPropagation()">
+        
+        <div class="edit-modal-header">
+          <div class="modal-title-group">
+            <mat-icon class="modal-title-icon">manage_accounts</mat-icon>
+            <div>
+              <h3>تعديل الملف الشخصي</h3>
+              <p>حدّث معلوماتك لتسهيل تواصل المهتمين بلهجتك معك</p>
+            </div>
+          </div>
+          <button class="modal-close-btn" (click)="cancelEditing()">
+            <mat-icon>close</mat-icon>
+          </button>
+        </div>
+
+        <div class="edit-modal-body">
+          <mat-form-field appearance="outline" class="full-field">
+            <mat-label>الاسم المعروض</mat-label>
+            <input matInput [(ngModel)]="editData.displayName" name="displayName" placeholder="اسمك الذي يظهر للآخرين">
+            <mat-icon matPrefix>badge</mat-icon>
+          </mat-form-field>
+
+          <mat-form-field appearance="outline" class="full-field">
+            <mat-label>البلد / المدينة</mat-label>
+            <input matInput [(ngModel)]="editData.country" name="country" placeholder="مثال: مصر، الإسكندرية">
+            <mat-icon matPrefix>location_city</mat-icon>
+          </mat-form-field>
+
+          <div class="form-row-dual">
+            <mat-form-field appearance="outline" class="half-field">
+              <mat-label>لهجتك الأم</mat-label>
+              <mat-select [(ngModel)]="editData.nativeDialectId" name="nativeDialectId">
+                @for (d of dialects; track d.id) {
+                  <mat-option [value]="d.id">
+                    <span class="opt-flag">{{ d.flag }}</span>
+                    <span>لهجة {{ d.name }}</span>
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>flag</mat-icon>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline" class="half-field">
+              <mat-label>اللهجات التي ترغب في تعلمها</mat-label>
+              <mat-select [(ngModel)]="editData.learningDialectIds" name="learningDialectIds" multiple>
+                @for (d of dialects; track d.id) {
+                  <mat-option [value]="d.id">
+                    <span class="opt-flag">{{ d.flag }}</span>
+                    <span>لهجة {{ d.name }}</span>
+                  </mat-option>
+                }
+              </mat-select>
+              <mat-icon matPrefix>school</mat-icon>
+            </mat-form-field>
+          </div>
+
+          <mat-form-field appearance="outline" class="full-field">
+            <mat-label>النبذة التعريفية</mat-label>
+            <textarea matInput [(ngModel)]="editData.bioAr" name="bioAr" rows="4"
+                      placeholder="شارك المجتمع اهتماماتك، عبارتك المفضلة بلهجتك، أو ما تبحث عنه..."></textarea>
+            <mat-icon matPrefix>chat</mat-icon>
+          </mat-form-field>
+        </div>
+
+        <div class="edit-modal-footer">
+          <button class="modal-cancel-btn" (click)="cancelEditing()">إلغاء</button>
+          <button class="modal-save-btn" (click)="saveProfile()" [disabled]="isSaving()">
+            @if (!isSaving()) {
+              <mat-icon>save</mat-icon>
+              <span>حفظ التغييرات</span>
+            } @else {
+              <mat-spinner diameter="20"></mat-spinner>
+              <span>جارٍ الحفظ...</span>
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
+</div>

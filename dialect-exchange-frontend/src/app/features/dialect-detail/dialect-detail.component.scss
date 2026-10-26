@@ -1,0 +1,44 @@
+$teal: #0d9488;
+$teal-dark: #0f766e;
+$gold: #d97706;
+$text: #1e293b;
+$muted: #64748b;
+
+.detail-page { min-height: 100vh; background: #f1f5f9; color: $text; font-family: 'Cairo', sans-serif; }
+.detail-header { max-width: 1120px; margin: 0 auto; padding: 22px 5%; display: flex; justify-content: space-between; gap: 12px; }
+.back-link, .home-link { display: inline-flex; align-items: center; gap: 6px; color: $teal-dark; font-weight: 700; text-decoration: none; }
+.back-link:hover, .home-link:hover { color: $gold; }
+.detail-header mat-icon { font-size: 19px; width: 19px; height: 19px; }
+main { max-width: 1120px; margin: 0 auto; padding: 0 5% 70px; }
+.hero { min-height: 340px; border-radius: 26px; overflow: hidden; position: relative; display: flex; align-items: flex-end; background-position: center; background-size: cover; box-shadow: 0 18px 40px rgba(15, 23, 42, .15); }
+.hero-overlay { position: absolute; inset: 0; background: linear-gradient(0deg, rgba(15, 23, 42, .86), rgba(15, 23, 42, .08)); }
+.hero-content { position: relative; z-index: 1; padding: 42px; color: white; }
+.flag { display: block; font-size: 42px; margin-bottom: 10px; }
+.eyebrow, .section-kicker { color: $gold; font-size: 13px; font-weight: 800; }
+.hero h1 { margin: 5px 0; font-size: clamp(38px, 6vw, 72px); line-height: 1.05; }
+.hero p { margin: 0; font-size: 18px; opacity: .9; }
+.intro-grid { display: grid; grid-template-columns: 1.7fr 1fr; gap: 24px; margin-top: 26px; }
+.intro-copy, .phrase-card, .sound-section, .learning-section, .phrases-section { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 8px 24px rgba(15, 23, 42, .06); }
+h2 { margin: 5px 0 14px; font-size: 27px; }
+.intro-copy p, .sound-section > p { color: $muted; line-height: 1.95; margin: 8px 0; }
+.phrase-card { display: flex; flex-direction: column; justify-content: center; background: linear-gradient(135deg, $teal, $teal-dark); color: white; }
+.phrase-card span { color: #99f6e4; font-size: 13px; font-weight: 800; }
+.phrase-card strong { font-size: 30px; margin: 14px 0 4px; }
+.phrase-card small { opacity: .8; font-size: 15px; }
+.sound-section, .learning-section, .phrases-section { margin-top: 24px; }
+.section-heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.section-heading h2 { margin-bottom: 0; }
+.tip-grid, .phrase-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 20px; }
+.tip-card { display: flex; gap: 12px; align-items: flex-start; padding: 18px; border-radius: 14px; background: #f8fafc; }
+.tip-card span { display: grid; place-items: center; flex: 0 0 30px; height: 30px; border-radius: 50%; color: white; background: $teal; font-weight: 800; }
+.tip-card p { margin: 2px 0; color: $muted; line-height: 1.75; font-size: 14px; }
+.mini-phrase { display: flex; flex-direction: column; gap: 5px; padding: 18px; border-right: 3px solid $gold; background: #fffbeb; }
+.mini-phrase strong { font-size: 22px; color: $text; }
+.mini-phrase span { color: $muted; font-size: 14px; }
+@media (max-width: 700px) {
+  .detail-header { padding-top: 16px; }
+  .hero { min-height: 280px; }
+  .hero-content { padding: 26px; }
+  .intro-grid, .tip-grid, .phrase-grid { grid-template-columns: 1fr; }
+  .intro-copy, .phrase-card, .sound-section, .learning-section, .phrases-section { padding: 22px; }
+}

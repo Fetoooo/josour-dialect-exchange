@@ -1,0 +1,630 @@
+<div class="chat-page" dir="rtl" [class.has-active-chat]="!!activeChat()">
+
+  <!-- Hidden file inputs -->
+  <input #fileInput type="file" style="display:none" (change)="onFileSelected($event)" />
+  <input #imageInput type="file" accept="image/*" style="display:none" (change)="onImageSelected($event)" />
+  <input #videoInput type="file" accept="video/*" style="display:none" (change)="onVideoSelected($event)" />
+
+  <!-- Video/Audio call overlay -->
+  @if (showCallOverlay()) {
+    <app-video-call></app-video-call>
+  }
+
+  <!-- Outgoing call waiting -->
+  @if (chatService.callState() === 'calling') {
+    <div class="call-waiting-overlay">
+      <div class="call-waiting-card glass-modal">
+        <div class="pulse-ring"></div>
+        <div class="call-avatar">
+          <span>{{ chatService.remoteUser()?.name?.charAt(0) || 'م' }}</span>
+        </div>
+        <p class="calling-label">
+          {{ chatService.callType() === 'audio' ? '📞 مكالمة صوتية' : '📹 مكالمة فيديو' }} • جارٍ الاتصال...
+        </p>
+        <h3>{{ chatService.remoteUser()?.name }}</h3>
+        <button class="end-call-btn" (click)="rejectCall()" title="إنهاء المكالمة">
+          <mat-icon>call_end</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Incoming call banner -->
+  @if (chatService.callState() === 'incoming') {
+    <div class="incoming-call-banner">
+      <div class="incoming-info">
+        <div class="call-ring-circle">
+          <mat-icon class="call-ring-icon">
+            {{ chatService.incomingCallFrom()?.callType === 'audio' ? 'call' : 'videocam' }}
+          </mat-icon>
+        </div>
+        <div>
+          <span class="incoming-name">{{ chatService.incomingCallFrom()?.callerName }}</span>
+          <span class="incoming-label">
+            {{ chatService.incomingCallFrom()?.callType === 'audio' ? 'مكالمة صوتية واردة' : 'مكالمة فيديو واردة' }}
+          </span>
+        </div>
+      </div>
+      <div class="incoming-actions">
+        <button class="reject-btn" (click)="rejectCall()" title="رفض">
+          <mat-icon>call_end</mat-icon>
+        </button>
+        <button class="accept-btn" (click)="acceptCall()" title="قبول">
+          <mat-icon>{{ chatService.incomingCallFrom()?.callType === 'audio' ? 'call' : 'videocam' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Image preview lightbox -->
+  @if (previewImageUrl()) {
+    <div class="img-lightbox" (click)="closeImagePreview()">
+      <div class="lightbox-content">
+        <img [src]="previewImageUrl()" alt="معاينة الصورة" (click)="$event.stopPropagation()" />
+        <button class="close-lightbox" (click)="closeImagePreview()">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- Context menu (right-click on own message) -->
+  @if (contextMenuMsg()) {
+    <div class="context-menu" [style.left.px]="contextMenuPos().x" [style.top.px]="contextMenuPos().y">
+      @if (canEdit(contextMenuMsg())) {
+        <button (click)="startEdit(contextMenuMsg())">
+          <mat-icon>edit</mat-icon>
+          <span>تعديل الرسالة</span>
+        </button>
+      }
+      @if (canDelete(contextMenuMsg())) {
+        <button class="danger" (click)="deleteMessage(contextMenuMsg())">
+          <mat-icon>delete</mat-icon>
+          <span>حذف الرسالة</span>
+        </button>
+      }
+      @if (!canEdit(contextMenuMsg()) && !canDelete(contextMenuMsg())) {
+        <div class="no-actions">انتهت مهلة التعديل والحذف (5 دقائق)</div>
+      }
+    </div>
+  }
+
+  <!-- ═════════════════════════════════════════
+       SIDEBAR: CONVERSATIONS & CONTACTS
+       ═════════════════════════════════════════ -->
+  <aside class="chat-sidebar">
+    
+    <!-- Sidebar Header -->
+    <div class="sidebar-header">
+      <div class="header-main-title">
+        <h2>
+          <span>الرسائل</span>
+          @if (totalUnread() > 0) {
+            <span class="total-unread-badge">{{ totalUnread() }}</span>
+          }
+        </h2>
+        <span class="sub-caption">تواصل وتبادل الثقافات واللهجات</span>
+      </div>
+
+      <div class="sidebar-header-actions">
+        <button class="header-action-btn" (click)="showUserSearch.set(!showUserSearch())" [class.active]="showUserSearch()" title="محادثة جديدة">
+          <mat-icon>{{ showUserSearch() ? 'close' : 'edit_square' }}</mat-icon>
+        </button>
+        <a class="header-action-btn" routerLink="/home" title="الرئيسية">
+          <mat-icon>home</mat-icon>
+        </a>
+      </div>
+    </div>
+
+    <!-- Search & Filters Container -->
+    <div class="sidebar-search-container">
+      <div class="modern-search-box">
+        <mat-icon>search</mat-icon>
+        <input
+          [placeholder]="showUserSearch() ? 'ابحث بين جميع مستخدمي جُسور...' : 'ابحث في محادثاتك...'"
+          [value]="showUserSearch() ? userSearchQuery() : convSearchQuery()"
+          (input)="showUserSearch() ? userSearchQuery.set($any($event.target).value) : convSearchQuery.set($any($event.target).value)" />
+        @if (showUserSearch() ? userSearchQuery() : convSearchQuery()) {
+          <button class="clear-search-btn" (click)="showUserSearch() ? userSearchQuery.set('') : convSearchQuery.set('')">
+            <mat-icon>close</mat-icon>
+          </button>
+        }
+      </div>
+
+      @if (!showUserSearch()) {
+        <!-- Segmented filter pills -->
+        <div class="conv-filter-bar">
+          <button class="filter-chip" [class.active]="convFilter() === 'all'" (click)="convFilter.set('all')">
+            الكل
+          </button>
+          <button class="filter-chip" [class.active]="convFilter() === 'unread'" (click)="convFilter.set('unread')">
+            غير مقروءة
+          </button>
+          <button class="filter-chip" [class.active]="convFilter() === 'online'" (click)="convFilter.set('online')">
+            متصل الآن
+          </button>
+        </div>
+      }
+    </div>
+
+    <!-- ── User Search / Discovery List ── -->
+    @if (showUserSearch()) {
+      <div class="user-discovery-panel">
+        <div class="panel-kicker">
+          <mat-icon>person_search</mat-icon>
+          <span>المستخدمون في جُسور ({{ filteredUsers().length }})</span>
+        </div>
+
+        <div class="user-list-scroll">
+          @if (filteredUsers().length === 0) {
+            <div class="empty-filter-state">
+              <mat-icon>search_off</mat-icon>
+              <p>لم يتم العثور على أي مستخدم بهذا الاسم</p>
+            </div>
+          }
+
+          @for (u of filteredUsers(); track u.id) {
+            <div class="user-item-card" (click)="openChat(u)">
+              <div class="avatar-ring">
+                <div class="avatar-box">
+                  @if (u.profileImage) {
+                    <img [src]="u.profileImage" alt="{{ u.displayName }}" />
+                  } @else {
+                    <span>{{ u.displayName?.charAt(0) || 'م' }}</span>
+                  }
+                </div>
+                @if (chatService.onlineUsers().includes(u.id)) {
+                  <span class="online-indicator-dot" title="متصل الآن"></span>
+                }
+              </div>
+
+              <div class="user-item-info">
+                <span class="user-name">{{ u.displayName }}</span>
+                <span class="user-status-text">
+                  {{ chatService.onlineUsers().includes(u.id) ? 'متصل الآن' : 'انقر لبدء محادثة' }}
+                </span>
+              </div>
+
+              <button class="start-chat-icon-btn">
+                <mat-icon>chat</mat-icon>
+              </button>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- ── Active Conversations List ── -->
+    @if (!showUserSearch()) {
+      <div class="conversations-scroll">
+        @if (filteredConversations().length === 0) {
+          <div class="empty-inbox-state">
+            <div class="empty-bubble-icon">
+              <mat-icon>chat_bubble_outline</mat-icon>
+            </div>
+            <h4>لا توجد محادثات هنا</h4>
+            <p>ابدأ محادثة جديدة وتبادل التعبيرات واللهجات الجميلة مع أصدقاء جدد!</p>
+            <button class="compose-btn" (click)="showUserSearch.set(true)">
+              <mat-icon>add_comment</mat-icon>
+              <span>محادثة جديدة</span>
+            </button>
+          </div>
+        }
+
+        @for (conv of filteredConversations(); track conv.userId) {
+          <div class="conversation-row"
+               [class.active]="activeChat()?.userId === conv.userId || activeChat()?.id === conv.userId"
+               (click)="openChat(conv)">
+            
+            <div class="conv-avatar-wrapper">
+              <div class="avatar-box">
+                @if (conv.profileImage) {
+                  <img [src]="conv.profileImage" alt="{{ conv.displayName }}" />
+                } @else {
+                  <span>{{ conv.displayName?.charAt(0) || 'م' }}</span>
+                }
+              </div>
+              @if (chatService.onlineUsers().includes(conv.userId)) {
+                <span class="online-indicator-dot" title="متصل الآن"></span>
+              }
+            </div>
+
+            <div class="conv-content">
+              <div class="conv-top-line">
+                <span class="partner-name">{{ conv.displayName }}</span>
+                @if (conv.lastMessageAt) {
+                  <span class="conv-timestamp">{{ conv.lastMessageAt | date:'shortTime' }}</span>
+                }
+              </div>
+
+              <div class="conv-bottom-line">
+                <span class="last-snippet" [class.has-unread]="conv.unreadCount > 0">
+                  {{ conv.lastMessage || 'ابدأ المحادثة...' }}
+                </span>
+                @if (conv.unreadCount > 0) {
+                  <span class="unread-count-pill">{{ conv.unreadCount }}</span>
+                }
+              </div>
+            </div>
+
+          </div>
+        }
+      </div>
+    }
+
+  </aside>
+
+  <!-- ═════════════════════════════════════════
+       MAIN CHAT STAGE
+       ═════════════════════════════════════════ -->
+  <main class="chat-main-stage">
+
+    <!-- Empty State (No Chat Selected) -->
+    @if (!activeChat()) {
+      <div class="no-chat-stage">
+        <div class="ambient-glow-circle"></div>
+        <div class="stage-placeholder-card">
+          <div class="placeholder-icon-circle">
+            <mat-icon>forum</mat-icon>
+          </div>
+          <h3>مرحباً بك في مساحة المحادثات</h3>
+          <p>اختر إحدى المحادثات من القائمة الجانبية، أو ابدأ محادثة جديدة وتواصل مع متحدثي مختلف اللهجات العربية فوراً.</p>
+          <button class="big-start-chat-btn" (click)="showUserSearch.set(true)">
+            <mat-icon>maps_ugc</mat-icon>
+            <span>بدء محادثة جديدة</span>
+          </button>
+        </div>
+      </div>
+    }
+
+    <!-- Active Chat Conversation -->
+    @if (activeChat()) {
+      
+      <!-- Chat Header -->
+      <header class="active-chat-header">
+        
+        <div class="header-partner-details">
+          <!-- Back button on mobile -->
+          <button class="mobile-back-btn" (click)="closeChat()" title="الرجوع للمحادثات">
+            <mat-icon>arrow_forward</mat-icon>
+          </button>
+
+          <div class="partner-avatar-ring">
+            <div class="avatar-box">
+              @if (activeChat().profileImage) {
+                <img [src]="activeChat().profileImage" alt="{{ activeChat().displayName }}" />
+              } @else {
+                <span>{{ activeChat().displayName?.charAt(0) || 'م' }}</span>
+              }
+            </div>
+            @if (chatService.onlineUsers().includes(activeChat().userId ?? activeChat().id)) {
+              <span class="online-indicator-dot"></span>
+            }
+          </div>
+
+          <div class="partner-meta">
+            <h3 class="partner-display-name">{{ activeChat().displayName }}</h3>
+            <div class="partner-presence">
+              @if (chatService.onlineUsers().includes(activeChat().userId ?? activeChat().id)) {
+                <span class="status-badge online">
+                  <span class="pulse-beacon"></span>
+                  <span>متصل الآن</span>
+                </span>
+              } @else {
+                <span class="status-badge offline">
+                  <span>غير متصل</span>
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Toolbar -->
+        <div class="chat-header-actions">
+          <!-- Audio Call -->
+          <button class="toolbar-icon-btn call-audio-btn"
+                  (click)="startAudioCall()"
+                  title="مكالمة صوتية">
+            <mat-icon>call</mat-icon>
+          </button>
+
+          <!-- Video Call -->
+          <button class="toolbar-icon-btn call-video-btn"
+                  (click)="startVideoCall()"
+                  title="مكالمة فيديو">
+            <mat-icon>videocam</mat-icon>
+          </button>
+
+          <!-- Partner Info Drawer Toggle -->
+          <button class="toolbar-icon-btn" (click)="togglePartnerInfo()" title="تفاصيل المستخدم">
+            <mat-icon>{{ showPartnerInfo() ? 'info' : 'info_outline' }}</mat-icon>
+          </button>
+
+          <!-- Connection Pill -->
+          <div class="connection-status-pill" [class.connected]="chatService.isConnected()" title="حالة الاتصال بالسيرفر">
+            <mat-icon>{{ chatService.isConnected() ? 'wifi' : 'wifi_off' }}</mat-icon>
+          </div>
+        </div>
+
+      </header>
+
+      <!-- Uploading Banner -->
+      @if (isUploading()) {
+        <div class="upload-progress-banner">
+          <mat-spinner diameter="18"></mat-spinner>
+          <span>جارٍ إرسال الملف... يرجى الانتظار</span>
+        </div>
+      }
+
+      <!-- Main Messages Feed Area -->
+      <div class="chat-feed-container">
+        
+        <div class="messages-scroll-area" #messageList>
+          
+          @if (isLoadingHistory()) {
+            <div class="feed-loading-wrapper">
+              <mat-spinner diameter="38"></mat-spinner>
+              <span>جارٍ تحميل سجل المحادثة...</span>
+            </div>
+          }
+
+          @if (!isLoadingHistory() && chatService.messages().length === 0) {
+            <div class="feed-empty-convo">
+              <div class="convo-welcome-icon">
+                <mat-icon>waving_hand</mat-icon>
+              </div>
+              <h4>بداية محادثتك مع {{ activeChat().displayName }}</h4>
+              <p>ألقِ التحية وتعرف على لهجته وثقافته الرائعة!</p>
+              <div class="quick-greetings-row">
+                <button (click)="newMessage.set('السلام عليكم ورحمة الله وبركاته 👋')">السلام عليكم 👋</button>
+                <button (click)="newMessage.set('أهلاً وسهلاً بك في جُسور! ✨')">أهلاً وسهلاً ✨</button>
+                <button (click)="newMessage.set('مرحباً! أحب أن أتعرف على لهجتك الجميلة 🌍')">مرحباً! 🌍</button>
+              </div>
+            </div>
+          }
+
+          <!-- Message Bubbles -->
+          @for (msg of chatService.messages(); track msg.id) {
+            <div class="message-bubble-wrapper"
+                 [class.outgoing]="isMine(msg)"
+                 [class.incoming]="!isMine(msg)"
+                 (contextmenu)="openContextMenu($event, msg)">
+              
+              <div class="speech-bubble" [class.is-deleted]="msg.isDeleted">
+                
+                <!-- Deleted Message -->
+                @if (msg.isDeleted) {
+                  <div class="deleted-msg-row">
+                    <mat-icon>remove_circle_outline</mat-icon>
+                    <span>تم حذف هذه الرسالة</span>
+                  </div>
+                }
+
+                <!-- Image Attachment -->
+                @else if (msg.messageType === 'image') {
+                  <div class="image-msg-card" (click)="openImagePreview(msg.fileUrl)">
+                    <img [src]="msg.fileUrl" [alt]="msg.fileName || 'صورة'" loading="lazy" />
+                    <div class="img-zoom-hover">
+                      <mat-icon>zoom_in</mat-icon>
+                    </div>
+                  </div>
+                }
+
+                <!-- Video Attachment -->
+                @else if (msg.messageType === 'video') {
+                  <div class="video-msg-card">
+                    <video controls [src]="msg.fileUrl" preload="metadata" playsinline></video>
+                  </div>
+                }
+
+                <!-- Voice Note -->
+                @else if (msg.messageType === 'voice') {
+                  <div class="voice-msg-player">
+                    <div class="voice-icon-circle">
+                      <mat-icon>mic</mat-icon>
+                    </div>
+                    <div class="voice-audio-element">
+                      <audio controls [src]="msg.fileUrl" preload="none"></audio>
+                    </div>
+                  </div>
+                }
+
+                <!-- File Attachment -->
+                @else if (msg.messageType === 'file') {
+                  <a class="file-attachment-card" [href]="msg.fileUrl" target="_blank" download>
+                    <div class="file-icon-square">
+                      <mat-icon>description</mat-icon>
+                    </div>
+                    <div class="file-meta">
+                      <span class="file-title">{{ msg.fileName || 'ملف مرفق' }}</span>
+                      <span class="file-size-badge">{{ formatFileSize(msg.fileSize) }}</span>
+                    </div>
+                    <div class="download-action">
+                      <mat-icon>download</mat-icon>
+                    </div>
+                  </a>
+                }
+
+                <!-- Standard Text Message -->
+                @else {
+                  @if (editingMessageId() === msg.id) {
+                    <div class="inline-edit-box">
+                      <input class="inline-edit-input" [(ngModel)]="editContent"
+                             (keydown.enter)="submitEdit()" (keydown.escape)="cancelEdit()" autofocus />
+                      <div class="inline-edit-buttons">
+                        <button class="inline-btn cancel" (click)="cancelEdit()" title="إلغاء">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                        <button class="inline-btn save" (click)="submitEdit()" title="حفظ التعديل">
+                          <mat-icon>check</mat-icon>
+                        </button>
+                      </div>
+                    </div>
+                  } @else {
+                    <p class="bubble-text">{{ msg.content }}</p>
+                  }
+                }
+
+                <!-- Bubble Metadata (Time, Edit badge, Read receipt) -->
+                @if (!msg.isDeleted) {
+                  <div class="bubble-meta-footer">
+                    @if (msg.isEdited) {
+                      <span class="edited-flag">معدلة</span>
+                    }
+                    <span class="msg-timestamp">{{ msg.sentAt | date:'shortTime' }}</span>
+                    @if (isMine(msg)) {
+                      <mat-icon class="delivery-status-icon" [class.is-read]="msg.isRead">
+                        {{ msg.isRead ? 'done_all' : 'done' }}
+                      </mat-icon>
+                    }
+                  </div>
+                }
+
+                <!-- Hover Actions Bar for Sender -->
+                @if (isMine(msg) && !msg.isDeleted && (canEdit(msg) || canDelete(msg))) {
+                  <div class="bubble-hover-actions">
+                    @if (canEdit(msg) && msg.messageType === 'text') {
+                      <button class="mini-action-btn" (click)="startEdit(msg)" title="تعديل الرسالة">
+                        <mat-icon>edit</mat-icon>
+                      </button>
+                    }
+                    @if (canDelete(msg)) {
+                      <button class="mini-action-btn danger" (click)="deleteMessage(msg)" title="حذف الرسالة">
+                        <mat-icon>delete_outline</mat-icon>
+                      </button>
+                    }
+                  </div>
+                }
+
+              </div>
+            </div>
+          }
+
+        </div>
+
+        <!-- ── Slide-out Partner Info Drawer ── -->
+        @if (showPartnerInfo()) {
+          <aside class="partner-info-drawer">
+            <div class="drawer-header">
+              <h4>الملف التعريفي</h4>
+              <button class="drawer-close-btn" (click)="showPartnerInfo.set(false)">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+
+            <div class="drawer-avatar-section">
+              <div class="drawer-avatar-circle">
+                @if (activeChat().profileImage) {
+                  <img [src]="activeChat().profileImage" alt="{{ activeChat().displayName }}" />
+                } @else {
+                  <span>{{ activeChat().displayName?.charAt(0) || 'م' }}</span>
+                }
+              </div>
+              <h3 class="drawer-user-name">{{ activeChat().displayName }}</h3>
+              @if (activeChat().email) {
+                <span class="drawer-user-email">{{ activeChat().email }}</span>
+              }
+              <div class="drawer-status-pill">
+                {{ chatService.onlineUsers().includes(activeChat().userId ?? activeChat().id) ? 'متصل الآن' : 'غير متصل' }}
+              </div>
+            </div>
+
+            <div class="drawer-action-list">
+              <button class="drawer-action-row" (click)="startAudioCall()">
+                <mat-icon>call</mat-icon>
+                <span>بدء مكالمة صوتية</span>
+              </button>
+              <button class="drawer-action-row" (click)="startVideoCall()">
+                <mat-icon>videocam</mat-icon>
+                <span>بدء مكالمة فيديو</span>
+              </button>
+            </div>
+          </aside>
+        }
+
+      </div>
+
+      <!-- Modern Chat Input Island -->
+      <footer class="chat-input-island">
+        
+        <!-- Voice Recording Mode Bar -->
+        @if (isRecording()) {
+          <div class="recording-studio-capsule">
+            <button class="studio-btn cancel-btn" (click)="cancelRecording()" title="إلغاء التسجيل">
+              <mat-icon>delete_outline</mat-icon>
+            </button>
+
+            <div class="studio-status">
+              <span class="live-pulse-dot"></span>
+              <span class="studio-timer">{{ formattedRecording }}</span>
+              <div class="live-wave-animation">
+                <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              </div>
+            </div>
+
+            <button class="studio-btn send-rec-btn" (click)="stopRecording()" title="إرسال التسجيل">
+              <mat-icon>send</mat-icon>
+            </button>
+          </div>
+        }
+
+        <!-- Standard Composition Bar -->
+        @if (!isRecording()) {
+          <div class="composition-capsule">
+            
+            <!-- Quick Emoji Buttons -->
+            <div class="quick-emojis-bar">
+              <button type="button" class="quick-emoji-btn" (click)="insertEmoji('👋')">👋</button>
+              <button type="button" class="quick-emoji-btn" (click)="insertEmoji('❤️')">❤️</button>
+              <button type="button" class="quick-emoji-btn" (click)="insertEmoji('😂')">😂</button>
+              <button type="button" class="quick-emoji-btn" (click)="insertEmoji('✨')">✨</button>
+            </div>
+
+            <div class="input-row-flex">
+              <!-- Attachments Menu Buttons -->
+              <button class="capsule-icon-btn" (click)="triggerImagePick()" title="إرسال صورة">
+                <mat-icon>image</mat-icon>
+              </button>
+              <button class="capsule-icon-btn" (click)="triggerVideoPick()" title="إرسال مقطع فيديو">
+                <mat-icon>videocam</mat-icon>
+              </button>
+              <button class="capsule-icon-btn" (click)="triggerFilePick()" title="إرفاق ملف">
+                <mat-icon>attach_file</mat-icon>
+              </button>
+
+              <!-- Text Input -->
+              <input class="modern-chat-input"
+                     [placeholder]="'اكتب رسالة لـ ' + (activeChat().displayName || 'المستخدم') + '...'"
+                     [value]="newMessage()"
+                     (input)="newMessage.set($any($event.target).value)"
+                     (keydown)="onKeydown($event)" />
+
+              <!-- Voice Recording Button (when input empty) -->
+              @if (!newMessage().trim()) {
+                <button class="capsule-icon-btn mic-action-btn"
+                        (click)="startRecording()"
+                        title="تسجيل رسالة صوتية">
+                  <mat-icon>mic</mat-icon>
+                </button>
+              }
+
+              <!-- Send Button (when input has text) -->
+              @if (newMessage().trim()) {
+                <button class="send-message-btn"
+                        (click)="sendMessage()"
+                        title="إرسال">
+                  <mat-icon>send</mat-icon>
+                </button>
+              }
+            </div>
+
+          </div>
+        }
+
+      </footer>
+
+    }
+
+  </main>
+
+</div>

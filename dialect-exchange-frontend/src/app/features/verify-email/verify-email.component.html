@@ -1,0 +1,21 @@
+<main class="auth-page">
+  <section class="auth-card">
+    <p class="auth-brand">Jusoor</p>
+    <div class="auth-icon">{{ status() === 'success' ? '✓' : '✉' }}</div>
+    <h1>
+      {{ status() === 'success' ? 'تم تأكيد بريدك الإلكتروني' : 
+         status() === 'error' ? 'تعذر تأكيد البريد' : 
+         status() === 'pending' ? 'تحقق من بريدك الإلكتروني' : 'تأكيد بريدك الإلكتروني' }}
+    </h1>
+    
+    <p [class.auth-message]="status() === 'success' || status() === 'pending'" [class.auth-error]="status() === 'error'">
+      {{ message() }}
+    </p>
+
+    <div *ngIf="status() === 'success'" style="margin: 18px 0;">
+      <a class="auth-primary-btn" routerLink="/login">تسجيل الدخول الآن</a>
+    </div>
+
+    <a class="auth-link" routerLink="/login">العودة لتسجيل الدخول</a>
+  </section>
+</main>

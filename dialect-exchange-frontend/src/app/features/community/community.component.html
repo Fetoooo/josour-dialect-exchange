@@ -1,0 +1,471 @@
+<div class="jusoor-dashboard" dir="rtl">
+
+  <!-- Ambient backdrop glows -->
+  <div class="bg-shapes">
+    <div class="shape shape-teal"></div>
+    <div class="shape shape-gold"></div>
+    <div class="shape shape-purple"></div>
+  </div>
+
+  <!-- Header -->
+  <mat-toolbar class="main-header">
+    <div class="brand">
+      <div class="sound-icon"><span></span><span></span><span></span></div>
+      <span class="logo-text">جُسور</span>
+    </div>
+    <span class="spacer"></span>
+    <button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      <span>أهلاً، {{ authService.currentUser()?.displayName || 'مستخدم' }}</span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu">
+      <button mat-menu-item routerLink="/profile"><mat-icon>person</mat-icon><span>الملف الشخصي</span></button>
+      <button mat-menu-item routerLink="/settings"><mat-icon>settings</mat-icon><span>الإعدادات</span></button>
+      <button mat-menu-item (click)="logout()"><mat-icon>logout</mat-icon><span>تسجيل الخروج</span></button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container" [class.sidebar-collapsed]="appSettings.settings().sidebarCollapsed">
+    <mat-sidenav mode="side" opened class="sidebar" [class.collapsed]="appSettings.settings().sidebarCollapsed">
+      <!-- Collapse toggle header -->
+      <div class="sidebar-top-bar">
+        <button class="sidebar-toggle-btn"
+                (click)="appSettings.toggleSidebar()"
+                [title]="appSettings.settings().sidebarCollapsed ? 'توسيع القائمة' : 'تصغير القائمة'"
+                type="button">
+          <mat-icon>{{ appSettings.settings().sidebarCollapsed ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+        </button>
+        <span class="sidebar-section-badge">القائمة</span>
+      </div>
+
+      <nav class="side-nav">
+        <!-- Navigation Section: تصفح -->
+        <div class="nav-section">
+          <span class="nav-section-title">التصفح</span>
+          <a routerLink="/home" routerLinkActive="active" class="nav-item" title="الرئيسية">
+            <div class="nav-icon-box"><mat-icon>home</mat-icon></div>
+            <span class="nav-label">الرئيسية</span>
+          </a>
+          <a routerLink="/explore" routerLinkActive="active" class="nav-item" title="استكشف اللهجات">
+            <div class="nav-icon-box"><mat-icon>explore</mat-icon></div>
+            <span class="nav-label">استكشف اللهجات</span>
+          </a>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Navigation Section: التواصل -->
+        <div class="nav-section">
+          <span class="nav-section-title">التواصل والمجتمع</span>
+          <a routerLink="/messages" routerLinkActive="active" class="nav-item" title="الرسائل">
+            <div class="nav-icon-box"><mat-icon>chat</mat-icon></div>
+            <span class="nav-label">الرسائل</span>
+          </a>
+          <a routerLink="/my-bridges" routerLinkActive="active" class="nav-item" title="جسوري">
+            <div class="nav-icon-box"><mat-icon>shortcut</mat-icon></div>
+            <span class="nav-label">جسوري</span>
+          </a>
+          <a routerLink="/community" routerLinkActive="active" class="nav-item" title="المجتمع">
+            <div class="nav-icon-box"><mat-icon>groups</mat-icon></div>
+            <span class="nav-label">المجتمع</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Sleek Action Capsule -->
+      <div class="sidebar-action-wrap">
+        <button class="new-clip-action-btn" (click)="openUploadDialog()" title="ساهم بمقطع جديد" type="button">
+          <div class="action-btn-icon">
+            <mat-icon>video_call</mat-icon>
+          </div>
+          <span class="action-btn-text">مقطع جديد</span>
+        </button>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="content" [style.margin-right.px]="appSettings.settings().sidebarCollapsed ? 68 : 215">
+      <div class="content-inner">
+
+        <!-- ══════════════════════════════════════════════════════════
+             1. COMMUNITY HERO SHOWCASE
+        ══════════════════════════════════════════════════════════ -->
+        <section class="community-hero-card">
+          <div class="hero-backdrop-glow glow-teal"></div>
+          <div class="hero-backdrop-glow glow-gold"></div>
+
+          <div class="hero-content">
+            <div class="hero-badge">
+              <mat-icon>stars</mat-icon>
+              <span>ملتقى الثقافات واللهجات العربية</span>
+            </div>
+
+            <h1 class="hero-title">مجتمع جُسور الحيّ</h1>
+            <p class="hero-subtitle">
+              مساحة تفاعلية حية تحتفي بغنى وتنوّع اللهجات العربية من المحيط إلى الخليج — استمع للأصوات الأصيلة، تفاعل مع أصحاب اللهجات، وساهم في بناء الجسور الثقافية.
+            </p>
+
+            <!-- Weekly Cultural Challenge Capsule -->
+            <div class="challenge-capsule">
+              <div class="challenge-icon-box">
+                <mat-icon>emoji_events</mat-icon>
+              </div>
+              <div class="challenge-text">
+                <div class="challenge-tag">
+                  <span class="pulse-dot"></span>
+                  <strong>تحدي الأسبوع الثقافي</strong>
+                </div>
+                <p class="challenge-desc">«أمثالنا الشعبية»: شارك مقطعاً صوتياً يشرح مَثَلاً دارجاً من لهجتك مع معناه بالفصحى وارتقِ في لوحة الشرف!</p>
+              </div>
+              <button class="challenge-btn" (click)="openUploadDialog()">
+                <mat-icon>add_circle</mat-icon>
+                <span>شارك بالتحدي</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════
+             2. DYNAMIC COMMUNITY KPI STAT CARDS
+        ══════════════════════════════════════════════════════════ -->
+        <section class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon-wrapper teal">
+              <mat-icon>groups</mat-icon>
+            </div>
+            <div class="stat-meta">
+              <span class="stat-value">{{ communityStats().totalMembers }}</span>
+              <span class="stat-label">المساهمون في المنصة</span>
+              <span class="stat-subtext">مجتمع عربي متنامٍ</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper gold">
+              <mat-icon>mic</mat-icon>
+            </div>
+            <div class="stat-meta">
+              <span class="stat-value">{{ communityStats().totalExchanges }}</span>
+              <span class="stat-label">المقاطع الثقافية</span>
+              <span class="stat-subtext">محتوى صوتي ومرئي أصيل</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper purple">
+              <mat-icon>public</mat-icon>
+            </div>
+            <div class="stat-meta">
+              <span class="stat-value">{{ communityStats().totalDialects }}</span>
+              <span class="stat-label">لهجات ممثلة</span>
+              <span class="stat-subtext">تنوع لغوي غني</span>
+            </div>
+          </div>
+
+          <div class="stat-card">
+            <div class="stat-icon-wrapper green">
+              <mat-icon>flash_on</mat-icon>
+            </div>
+            <div class="stat-meta">
+              <div class="active-badge-wrap">
+                <span class="stat-value">{{ communityStats().activeToday }}</span>
+                <span class="online-indicator"></span>
+              </div>
+              <span class="stat-label">نشطون اليوم</span>
+              <span class="stat-subtext">تفاعل ومشاركات حية</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════════════════
+             3. MAIN 2-COLUMN COMMUNITY SECTION
+        ══════════════════════════════════════════════════════════ -->
+        <div class="two-col-layout">
+
+          <!-- Right / Main Column in RTL: Leaderboard & Recent Exchanges -->
+          <div class="main-column">
+
+            <!-- ── Leaderboard Section ── -->
+            <div class="section-card leaderboard-card">
+              <div class="section-header">
+                <div class="title-with-icon">
+                  <div class="title-icon-box gold">
+                    <mat-icon>workspace_premium</mat-icon>
+                  </div>
+                  <div>
+                    <h2 class="section-title">لوحة الشرف والمساهمين الأوائل</h2>
+                    <span class="section-sub">أبرز الأصوات والمساهمين الذين أثروا المكتبة الصوتية وتفاعلوا مع المجتمع</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Podium Showcase (Top 3) -->
+              @if (podium().length > 0) {
+                <div class="podium-grid">
+                  <!-- Rank 2: Silver (Right in RTL) -->
+                  @if (podium()[1]; as p2) {
+                    <div class="podium-card rank-2">
+                      <div class="podium-rank-badge silver">
+                        <span>🥈 المركز الثاني</span>
+                      </div>
+                      <div class="podium-avatar-ring silver">
+                        @if (p2.profileImage) {
+                          <img [src]="p2.profileImage" alt="">
+                        } @else {
+                          <mat-icon>person</mat-icon>
+                        }
+                      </div>
+                      <span class="podium-name">{{ p2.name }}</span>
+                      <span class="podium-dialect-pill">{{ p2.flag }} {{ p2.dialect }}</span>
+                      <div class="podium-stats">
+                        <span class="p-stat likes" title="إجمالي الإعجابات">
+                          <mat-icon>favorite</mat-icon> {{ p2.likes }}
+                        </span>
+                        <span class="p-stat uploads" title="المقاطع المرفوعة">
+                          <mat-icon>cloud_upload</mat-icon> {{ p2.uploads }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+
+                  <!-- Rank 1: Gold (Center & Elevated) -->
+                  @if (podium()[0]; as p1) {
+                    <div class="podium-card rank-1">
+                      <div class="crown-icon">👑</div>
+                      <div class="podium-rank-badge gold">
+                        <span>🥇 بطل المجتمع</span>
+                      </div>
+                      <div class="podium-avatar-ring gold">
+                        @if (p1.profileImage) {
+                          <img [src]="p1.profileImage" alt="">
+                        } @else {
+                          <mat-icon>person</mat-icon>
+                        }
+                      </div>
+                      <span class="podium-name">{{ p1.name }}</span>
+                      <span class="podium-dialect-pill gold-accent">{{ p1.flag }} {{ p1.dialect }}</span>
+                      <div class="podium-stats">
+                        <span class="p-stat likes" title="إجمالي الإعجابات">
+                          <mat-icon>favorite</mat-icon> {{ p1.likes }}
+                        </span>
+                        <span class="p-stat uploads" title="المقاطع المرفوعة">
+                          <mat-icon>cloud_upload</mat-icon> {{ p1.uploads }}
+                        </span>
+                      </div>
+                      <span class="ambassador-badge">سفير اللهجات المعتمد</span>
+                    </div>
+                  }
+
+                  <!-- Rank 3: Bronze (Left in RTL) -->
+                  @if (podium()[2]; as p3) {
+                    <div class="podium-card rank-3">
+                      <div class="podium-rank-badge bronze">
+                        <span>🥉 المركز الثالث</span>
+                      </div>
+                      <div class="podium-avatar-ring bronze">
+                        @if (p3.profileImage) {
+                          <img [src]="p3.profileImage" alt="">
+                        } @else {
+                          <mat-icon>person</mat-icon>
+                        }
+                      </div>
+                      <span class="podium-name">{{ p3.name }}</span>
+                      <span class="podium-dialect-pill">{{ p3.flag }} {{ p3.dialect }}</span>
+                      <div class="podium-stats">
+                        <span class="p-stat likes" title="إجمالي الإعجابات">
+                          <mat-icon>favorite</mat-icon> {{ p3.likes }}
+                        </span>
+                        <span class="p-stat uploads" title="المقاطع المرفوعة">
+                          <mat-icon>cloud_upload</mat-icon> {{ p3.uploads }}
+                        </span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+
+              <!-- Remaining Ranked Contributors (#4, #5, ...) -->
+              @if (remainingLeaders().length > 0) {
+                <div class="ranked-list">
+                  @for (member of remainingLeaders(); track member.userId) {
+                    <div class="ranked-row">
+                      <span class="rank-num">#{{ member.rank }}</span>
+                      <div class="ranked-avatar">
+                        @if (member.profileImage) {
+                          <img [src]="member.profileImage" alt="">
+                        } @else {
+                          <mat-icon>person</mat-icon>
+                        }
+                      </div>
+                      <div class="ranked-info">
+                        <span class="ranked-name">{{ member.name }}</span>
+                        <span class="ranked-dialect">{{ member.flag }} {{ member.dialect }}</span>
+                      </div>
+                      <div class="ranked-stats">
+                        <span class="r-stat"><mat-icon>cloud_upload</mat-icon> {{ member.uploads }} مقطع</span>
+                        <span class="r-stat heart"><mat-icon>favorite</mat-icon> {{ member.likes }} إعجاب</span>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+            <!-- ── Recent Community Exchanges ── -->
+            <div class="section-card recent-exchanges-card">
+              <div class="section-header">
+                <div class="title-with-icon">
+                  <div class="title-icon-box teal">
+                    <mat-icon>whatshot</mat-icon>
+                  </div>
+                  <div>
+                    <h2 class="section-title">أحدث المشاركات المجتمعية</h2>
+                    <span class="section-sub">استمع وتفاعل مع أحدث المساهمات الصوتية والمرئية لمتحدثي اللهجات</span>
+                  </div>
+                </div>
+                <a routerLink="/home" class="view-all-link">
+                  <span>تصفح الكل</span>
+                  <mat-icon>arrow_back</mat-icon>
+                </a>
+              </div>
+
+              @if (isLoading()) {
+                <div class="loading-wrap">
+                  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+                  <span class="loading-text">جارٍ تحميل مشاركات المجتمع...</span>
+                </div>
+              } @else if (recentExchanges().length === 0) {
+                <div class="empty-state">
+                  <mat-icon>graphic_eq</mat-icon>
+                  <h3>لا توجد مشاركات حتى الآن</h3>
+                  <p>كن أول من يثري مجتمع جُسور بصوته ولهجته الأصيلة!</p>
+                  <button mat-flat-button class="empty-cta" (click)="openUploadDialog()">
+                    <mat-icon>add</mat-icon>
+                    أضف أول مقطع
+                  </button>
+                </div>
+              } @else {
+                <div class="clips-grid">
+                  @for (ex of recentExchanges(); track ex.id) {
+                    <div class="clip-item-card">
+                      <!-- Media preview trigger -->
+                      <div class="clip-media-box" (click)="openPlayer(ex)">
+                        @if (ex.thumbnail) {
+                          <img [src]="ex.thumbnail" alt="" class="clip-thumb">
+                        } @else {
+                          <div class="clip-audio-art">
+                            <mat-icon>{{ ex.type === 'video' ? 'videocam' : 'mic' }}</mat-icon>
+                          </div>
+                        }
+                        <div class="play-floating-btn">
+                          <mat-icon>{{ ex.type === 'video' ? 'play_arrow' : 'headphones' }}</mat-icon>
+                        </div>
+                        <span class="dialect-tag">{{ ex.flag }} {{ ex.dialect }}</span>
+                      </div>
+
+                      <!-- Clip details -->
+                      <div class="clip-details">
+                        <h4 class="clip-title" (click)="openPlayer(ex)" [title]="ex.title">{{ ex.title }}</h4>
+                        @if (ex.description) {
+                          <p class="clip-desc">{{ ex.description }}</p>
+                        }
+                        <div class="clip-author-row">
+                          <span class="author-name">بواسطة {{ ex.user }}</span>
+                        </div>
+
+                        <!-- Card Footer: Interactive Like Reaction & Play Button -->
+                        <div class="clip-footer">
+                          <!-- Persistent interactive like button -->
+                          <button class="clip-like-btn"
+                                  [class.liked]="exchangeService.isLiked(ex.id)"
+                                  (click)="onToggleLike(ex, $event)"
+                                  [title]="exchangeService.isLiked(ex.id) ? 'إلغاء الإعجاب' : 'إعجاب'">
+                            <mat-icon>{{ exchangeService.isLiked(ex.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+                            <span class="like-number">{{ ex.likes || 0 }}</span>
+                          </button>
+
+                          <button class="clip-play-link" (click)="openPlayer(ex)">
+                            <span>{{ ex.type === 'video' ? 'شاهد الآن' : 'استمع الآن' }}</span>
+                            <mat-icon>play_circle</mat-icon>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+
+          </div>
+
+          <!-- Left / Side Column in RTL: Dialect Distribution & Cultural Inspiration -->
+          <div class="side-column">
+
+            <!-- Dialect Representation Card -->
+            <div class="section-card dialect-card">
+              <div class="section-header">
+                <div class="title-with-icon">
+                  <div class="title-icon-box purple">
+                    <mat-icon>equalizer</mat-icon>
+                  </div>
+                  <div>
+                    <h3 class="section-title">حضور اللهجات</h3>
+                    <span class="section-sub">نسبة المحتوى لكل لهجة</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="dialect-progress-list">
+                @for (d of dialectStats(); track d.name) {
+                  <div class="dialect-item">
+                    <div class="dialect-header-row">
+                      <span class="d-name">{{ d.flag }} {{ d.name }}</span>
+                      <div class="d-meta-badges">
+                        <span class="d-count">{{ d.count }} مقطع</span>
+                        <span class="d-pct">{{ d.percent }}%</span>
+                      </div>
+                    </div>
+                    <div class="custom-progress-track">
+                      <div class="custom-progress-fill" [style.width.%]="d.percent"></div>
+                    </div>
+                  </div>
+                }
+              </div>
+            </div>
+
+            <!-- Cultural Inspiration Card -->
+            <div class="section-card inspiration-card">
+              <div class="quote-icon">
+                <mat-icon>format_quote</mat-icon>
+              </div>
+              <h4 class="inspiration-title">«اللهجات جسور.. لا حواجز»</h4>
+              <p class="inspiration-text">
+                كل تعبير أو مثل دارج في لهجة عربية يحمل بين طياته روح المكان وتاريخ الأجداد. حين نتحدث ونستمع لبعضنا، نكتشف كم نحن قريبون ومتشابهون.
+              </p>
+              <div class="inspiration-badge">
+                <mat-icon>auto_awesome</mat-icon>
+                <span>رسالة مجتمع جُسور</span>
+              </div>
+            </div>
+
+            <!-- Join / Contribute Card -->
+            <div class="section-card contribute-cta-card">
+              <div class="cta-bubble">
+                <mat-icon>mic</mat-icon>
+              </div>
+              <h3 class="cta-title">صوتك يثري جُسور</h3>
+              <p class="cta-sub">شارك مقطعاً بلهجتك الأم وساعد الآلاف في التعرف على نطقك ومفرداتك الشعبية الفريدة.</p>
+              <button class="cta-upload-btn" (click)="openUploadDialog()">
+                <mat-icon>add_circle</mat-icon>
+                <span>ساهم بمقطع جديد الآن</span>
+              </button>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

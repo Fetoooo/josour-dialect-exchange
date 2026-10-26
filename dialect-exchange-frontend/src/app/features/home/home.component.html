@@ -1,0 +1,233 @@
+<div class="jusoor-dashboard" dir="rtl">
+  
+  <div class="bg-shapes">
+    <div class="shape shape-teal"></div>
+    <div class="shape shape-gold"></div>
+  </div>
+
+  <mat-toolbar class="main-header">
+    <div class="brand">
+      <div class="sound-icon"><span></span><span></span><span></span></div>
+      <span class="logo-text">جُسور</span>
+    </div>
+
+    <div class="search-bar">
+      <mat-icon class="search-icon">search</mat-icon>
+      <input
+        class="search-input"
+        placeholder="ابحث عن مقطع، لهجة، أو مستخدم..."
+        [value]="searchQuery()"
+        (input)="onSearch($any($event.target).value)" />
+      @if (searchQuery()) {
+        <button class="clear-btn" (click)="clearSearch()">
+          <mat-icon>close</mat-icon>
+        </button>
+      }
+    </div>
+
+    <span class="spacer"></span>
+
+    <!-- ★ Notification Bell -->
+    <app-notification-bell></app-notification-bell>
+
+    <button mat-button class="user-btn" [matMenuTriggerFor]="userMenu">
+      <mat-icon>account_circle</mat-icon>
+      <span>أهلاً، {{ authService.currentUser()?.displayName || 'مستخدم جُسور' }}</span>
+      <mat-icon>expand_more</mat-icon>
+    </button>
+    <mat-menu #userMenu="matMenu" class="jusoor-menu">
+      <button mat-menu-item routerLink="/profile">
+        <mat-icon>person</mat-icon><span>الملف الشخصي</span>
+      </button>
+      <button mat-menu-item routerLink="/settings">
+        <mat-icon>settings</mat-icon><span>الإعدادات</span>
+      </button>
+      <button mat-menu-item (click)="logout()">
+        <mat-icon>logout</mat-icon><span>تسجيل الخروج</span>
+      </button>
+    </mat-menu>
+  </mat-toolbar>
+
+  <mat-sidenav-container class="sidenav-container" [class.sidebar-collapsed]="appSettings.settings().sidebarCollapsed">
+    <mat-sidenav mode="side" opened class="sidebar" [class.collapsed]="appSettings.settings().sidebarCollapsed">
+      <!-- Collapse toggle header -->
+      <div class="sidebar-top-bar">
+        <button class="sidebar-toggle-btn"
+                (click)="appSettings.toggleSidebar()"
+                [title]="appSettings.settings().sidebarCollapsed ? 'توسيع القائمة' : 'تصغير القائمة'"
+                type="button">
+          <mat-icon>{{ appSettings.settings().sidebarCollapsed ? 'chevron_left' : 'chevron_right' }}</mat-icon>
+        </button>
+        <span class="sidebar-section-badge">القائمة</span>
+      </div>
+
+      <nav class="side-nav">
+        <!-- Navigation Section: تصفح -->
+        <div class="nav-section">
+          <span class="nav-section-title">التصفح</span>
+          <a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item landing-link" title="الصفحة التعريفية">
+            <div class="nav-icon-box"><mat-icon>public</mat-icon></div>
+            <span class="nav-label">الصفحة التعريفية</span>
+          </a>
+          <a routerLink="/home" routerLinkActive="active" class="nav-item" title="الرئيسية">
+            <div class="nav-icon-box"><mat-icon>home</mat-icon></div>
+            <span class="nav-label">الرئيسية</span>
+          </a>
+          <a routerLink="/explore" routerLinkActive="active" class="nav-item" title="استكشف اللهجات">
+            <div class="nav-icon-box"><mat-icon>explore</mat-icon></div>
+            <span class="nav-label">استكشف اللهجات</span>
+          </a>
+        </div>
+
+        <div class="nav-divider"></div>
+
+        <!-- Navigation Section: التواصل -->
+        <div class="nav-section">
+          <span class="nav-section-title">التواصل والمجتمع</span>
+          <a routerLink="/messages" routerLinkActive="active" class="nav-item" title="الرسائل">
+            <div class="nav-icon-box"><mat-icon>chat</mat-icon></div>
+            <span class="nav-label">الرسائل</span>
+          </a>
+          <a routerLink="/my-bridges" routerLinkActive="active" class="nav-item" title="جسوري">
+            <div class="nav-icon-box"><mat-icon>shortcut</mat-icon></div>
+            <span class="nav-label">جسوري</span>
+          </a>
+          <a routerLink="/community" routerLinkActive="active" class="nav-item" title="المجتمع">
+            <div class="nav-icon-box"><mat-icon>groups</mat-icon></div>
+            <span class="nav-label">المجتمع</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Sleek Action Capsule -->
+      <div class="sidebar-action-wrap">
+        <button class="new-clip-action-btn" (click)="openUploadDialog()" title="ساهم بمقطع جديد" type="button">
+          <div class="action-btn-icon">
+            <mat-icon>video_call</mat-icon>
+          </div>
+          <span class="action-btn-text">مقطع جديد</span>
+        </button>
+      </div>
+    </mat-sidenav>
+
+    <mat-sidenav-content class="content" [style.margin-right.px]="appSettings.settings().sidebarCollapsed ? 68 : 215">
+      <div class="content-inner">
+        
+        <header class="feed-header">
+          <div class="header-top">
+            <div>
+              <h1>آخر التبادلات</h1>
+              <p>استمع وتعلم لهجات عربية حقيقية من أهلها</p>
+            </div>
+            @if (searchQuery()) {
+              <div class="search-result-info">
+                <mat-icon>filter_list</mat-icon>
+                <span>{{ exchanges().length }} نتيجة لـ "{{ searchQuery() }}"</span>
+              </div>
+            }
+          </div>
+        </header>
+
+        <section class="culture-card" aria-label="معلومة عن العالم العربي">
+          <div class="culture-icon"><mat-icon>auto_awesome</mat-icon></div>
+          <div class="culture-copy">
+            <span class="culture-label">نافذة ثقافية</span>
+            <h2>ثراء العربية في تنوعها</h2>
+            <p>تجمع العربية أكثر من 400 مليون متحدث، وتمنحنا لهجاتها المتنوعة طرقاً مختلفة للتعبير عن الكرم والفرح والقرب. كل كلمة محلية تحمل قصة من تاريخ أهلها ومكانهم.</p>
+            <div class="culture-tags"><span>لغة تجمعنا</span><span>لهجات تثريها</span><span>ثقافات تلهمنا</span></div>
+          </div>
+        </section>
+
+        <mat-chip-set class="dialect-filter">
+          @for (d of dialects(); track d) {
+            <mat-chip class="custom-chip" [class.active-chip]="selectedDialect() === d"
+              (click)="selectDialect(d)">{{ d }}
+            </mat-chip>
+          }
+        </mat-chip-set>
+
+        @if (exchanges().length === 0) {
+          <div class="empty-state">
+            <mat-icon>{{ searchQuery() ? 'search_off' : 'mic_none' }}</mat-icon>
+            @if (searchQuery()) {
+              <p>لا توجد نتائج لـ "{{ searchQuery() }}"</p>
+              <button mat-stroked-button (click)="clearSearch()">مسح البحث</button>
+            } @else {
+              <p>لا توجد مقاطع بهذه اللهجة بعد. كن أول من يضيف!</p>
+            }
+          </div>
+        }
+
+        <div class="feed-grid">
+          @for (ex of exchanges(); track ex.id) {
+            <mat-card class="exchange-card glass">
+              <div class="card-media" [class.is-audio]="ex.type === 'audio'" (click)="openPlayer(ex)">
+                @if (exchangeService.hasCustomThumbnail(ex)) {
+                  <img class="media-thumbnail" [src]="ex.thumbnail" alt="">
+                } @else if (ex.type === 'audio') {
+                  <div class="audio-ambient-backdrop">
+                    <div class="waveform-bars">
+                      <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                    </div>
+                  </div>
+                }
+                <div class="play-overlay" [class.audio-overlay]="ex.type === 'audio'">
+                  <mat-icon>{{ ex.type === 'audio' ? 'mic' : 'play_circle' }}</mat-icon>
+                </div>
+                <span class="dialect-badge">{{ ex.flag }} {{ ex.dialect }}</span>
+                
+                <div class="play-hint">{{ ex.type === 'audio' ? 'اضغط للاستماع' : 'اضغط للتشغيل' }}</div>
+              </div>
+
+              <mat-card-content>
+                <h3>{{ ex.title }}</h3>
+                @if (ex.description) {
+                  <p class="exchange-description">{{ ex.description }}</p>
+                }
+                <div class="card-footer">
+                  <span class="author">بواسطة {{ ex.user }}</span>
+                  <div class="stats">
+                    <button class="like-btn" [class.liked]="exchangeService.isLiked(ex.id)" (click)="onLike(ex)" [title]="exchangeService.isLiked(ex.id) ? 'إلغاء الإعجاب' : 'إعجاب'">
+                      <mat-icon>{{ exchangeService.isLiked(ex.id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+                      <span>{{ ex.likes }}</span>
+                    </button>
+                    <button class="comment-btn" [class.active]="openCommentId() === ex.id"
+                      (click)="toggleComments(ex.id)">
+                      <mat-icon>chat_bubble_outline</mat-icon>
+                      <span>{{ ex.commentCount ?? 0 }}</span>
+                    </button>
+                  </div>
+                </div>
+
+                @if (openCommentId() === ex.id) {
+                  <div class="comments-section">
+                    <div class="add-comment">
+                      <input class="comment-input" placeholder="أضف تعليقاً..."
+                        [value]="getNewComment(ex.id)"
+                        (input)="setNewComment(ex.id, $any($event.target).value)"
+                        (keydown.enter)="submitComment(ex.id)" />
+                      <button class="send-btn" (click)="submitComment(ex.id)"
+                        [disabled]="!getNewComment(ex.id).trim()">
+                        <mat-icon>send</mat-icon>
+                      </button>
+                    </div>
+                    @if (getComments(ex.id).length === 0) {
+                      <p class="no-comments">لا توجد تعليقات بعد. كن أول من يعلّق!</p>
+                    }
+                    @for (c of getComments(ex.id); track c.id) {
+                      <div class="comment-item">
+                        <span class="comment-author">{{ c.author }}</span>
+                        <span class="comment-content">{{ c.content }}</span>
+                      </div>
+                    }
+                  </div>
+                }
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

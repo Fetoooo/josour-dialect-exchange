@@ -1,0 +1,351 @@
+<div class="landing-page" dir="rtl">
+
+  <!-- ═══════════════════════════════════════════
+       NAVBAR
+  ═══════════════════════════════════════════ -->
+  <nav class="navbar">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <div class="soundwave-sm">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <span class="nav-logo">جُسور</span>
+      </div>
+      <div class="nav-links">
+        <a href="#features" class="nav-link">المميزات</a>
+        <a href="#dialects" class="nav-link">اللهجات</a>
+        <a href="#how" class="nav-link">كيف يعمل؟</a>
+      </div>
+      <div class="nav-actions">
+        <button class="theme-toggle-btn" (click)="toggleDarkMode()" [attr.aria-label]="appSettings.settings().darkMode ? 'الوضع النهاري' : 'الوضع الليلي'" [title]="appSettings.settings().darkMode ? 'الوضع النهاري' : 'الوضع الليلي'" type="button">
+          <mat-icon>{{ appSettings.settings().darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+
+        @if (authService.currentUser()) {
+          <a routerLink="/home" class="btn-primary-sm">الرئيسية</a>
+        } @else {
+          <a routerLink="/login" class="btn-ghost desk-only">تسجيل الدخول</a>
+          <a routerLink="/register" class="btn-primary-sm">انضم مجاناً</a>
+        }
+        <button class="nav-toggle" (click)="toggleMobileMenu()" [attr.aria-expanded]="mobileMenuOpen()" aria-label="قائمة التصفح" type="button">
+          <mat-icon>{{ mobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    @if (mobileMenuOpen()) {
+      <div class="mobile-menu-backdrop" (click)="closeMobileMenu()"></div>
+      <div class="mobile-menu" [class.open]="mobileMenuOpen()">
+        <div class="mobile-nav-links">
+          <a href="#features" class="mobile-nav-link" (click)="closeMobileMenu()">
+            <mat-icon>stars</mat-icon>
+            <span>المميزات</span>
+          </a>
+          <a href="#dialects" class="mobile-nav-link" (click)="closeMobileMenu()">
+            <mat-icon>language</mat-icon>
+            <span>اللهجات</span>
+          </a>
+          <a href="#how" class="mobile-nav-link" (click)="closeMobileMenu()">
+            <mat-icon>help_outline</mat-icon>
+            <span>كيف يعمل؟</span>
+          </a>
+        </div>
+        <div class="mobile-drawer-actions">
+          <button class="theme-toggle-btn-mobile" (click)="toggleDarkMode()" type="button">
+            <mat-icon>{{ appSettings.settings().darkMode ? 'light_mode' : 'dark_mode' }}</mat-icon>
+            <span>{{ appSettings.settings().darkMode ? 'تفعيل الوضع النهاري' : 'تفعيل الوضع الليلي' }}</span>
+          </button>
+          @if (authService.currentUser()) {
+            <a routerLink="/home" class="btn-primary-sm full-btn" (click)="closeMobileMenu()">الرئيسية</a>
+          } @else {
+            <a routerLink="/login" class="btn-ghost full-btn" (click)="closeMobileMenu()">تسجيل الدخول</a>
+            <a routerLink="/register" class="btn-primary-sm full-btn" (click)="closeMobileMenu()">انضم مجاناً</a>
+          }
+        </div>
+      </div>
+    }
+  </nav>
+
+  <!-- ═══════════════════════════════════════════
+       HERO SECTION
+  ═══════════════════════════════════════════ -->
+  <section class="hero">
+
+    <!-- Animated background -->
+    <div class="hero-bg">
+      <div class="orb orb-1"></div>
+      <div class="orb orb-2"></div>
+      <div class="orb orb-3"></div>
+      <div class="grid-overlay"></div>
+    </div>
+
+    <!-- Floating dialect bubbles -->
+    <div class="dialect-bubbles">
+      <div class="bubble b1">🇪🇬 إزيك؟</div>
+      <div class="bubble b2">🇸🇦 شلونك؟</div>
+      <div class="bubble b3">🇸🇾 كيفك؟</div>
+      <div class="bubble b4">🇲🇦 لاباس؟</div>
+      <div class="bubble b5">🇮🇶 بخير</div>
+      <div class="bubble b6">🇹🇳 لاباس</div>
+    </div>
+
+    <div class="hero-content">
+      <!-- Badge -->
+      <div class="hero-badge">
+        <span class="badge-dot"></span>
+        منصة تبادل اللهجات العربية الأولى
+      </div>
+
+      <!-- Headline -->
+      <h1 class="hero-title">
+        <span class="line-1">صوتك يعبر</span>
+        <span class="line-2 gradient-text">الحدود</span>
+        <span class="line-3">ولهجتك تبني <span class="underline-word">جسراً</span></span>
+      </h1>
+
+      <p class="hero-sub">
+        تعلم لهجات عربية حقيقية من أهلها. استمع، تحدث، وشارك لهجتك مع ملايين العرب.
+        <br>مجاني تماماً، للأبد.
+      </p>
+
+      <!-- CTA Buttons -->
+      <div class="hero-ctas">
+        @if (authService.currentUser()) {
+          <a routerLink="/home" class="cta-main">
+            <span>الرئيسية</span>
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+        } @else {
+          <a routerLink="/register" class="cta-main">
+            <span>ابنِ جسرك الآن</span>
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+          <a routerLink="/login" class="cta-secondary">
+            <mat-icon>play_circle</mat-icon>
+            <span>لديّ حساب</span>
+          </a>
+        }
+      </div>
+
+      <!-- Social proof -->
+      <div class="social-proof">
+        <div class="proof-avatars">
+          <div class="av">🇪🇬</div>
+          <div class="av">🇸🇾</div>
+          <div class="av">🇸🇦</div>
+          <div class="av">🇲🇦</div>
+          <div class="av">🇮🇶</div>
+        </div>
+        <span>انضم إلى مجتمع من محبي اللهجات العربية</span>
+      </div>
+    </div>
+
+    <!-- Hero visual: Dialect Showcase -->
+    <div class="hero-visual">
+      <div class="phone-mockup">
+        <div class="phone-screen">
+          <div class="screen-header">
+            <div class="sh-dot"></div>
+            <span>جُسور</span>
+          </div>
+
+          @for (d of dialects; track d.name; let i = $index) {
+            <div class="dialect-card-mock" [class.active]="activeDialect() === i"
+                 [style.border-color]="d.color">
+              <div class="dcm-top" [style.background]="d.color + '22'">
+                <span class="dcm-flag">{{ d.flag }}</span>
+                <span class="dcm-name" [style.color]="d.color">{{ d.name }}</span>
+                <div class="waveform">
+                  <span></span><span></span><span></span><span></span>
+                  <span></span><span></span><span></span>
+                </div>
+              </div>
+              <div class="dcm-body">
+                <p class="dcm-phrase">{{ d.phrase }}</p>
+                <p class="dcm-translation">{{ d.translation }}</p>
+              </div>
+            </div>
+          }
+
+          <div class="screen-footer">
+            @for (d of dialects; track d.name; let i = $index) {
+              <div class="dot" [class.active]="activeDialect() === i"
+                   [style.background]="activeDialect() === i ? dialects[activeDialect()].color : '#e2e8f0'">
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-hint">
+      <div class="scroll-mouse">
+        <div class="scroll-wheel"></div>
+      </div>
+      <span>اكتشف أكثر</span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       STATS BAR
+  ═══════════════════════════════════════════ -->
+  <section class="stats-bar observe-me" id="stats">
+    <div class="stats-inner" [class.visible]="isVisible('stats')">
+      @for (s of stats; track s.label) {
+        <div class="stat-item">
+          <mat-icon>{{ s.icon }}</mat-icon>
+          <span class="stat-num">{{ s.num }}</span>
+          <span class="stat-label">{{ s.label }}</span>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FEATURES SECTION
+  ═══════════════════════════════════════════ -->
+  <section class="features observe-me" id="features">
+    <div class="section-inner" [class.visible]="isVisible('features')">
+      <div class="section-tag">المميزات</div>
+      <h2 class="section-title">كل ما تحتاجه لتعلم لهجة عربية</h2>
+      <p class="section-sub">منصة متكاملة تجمع التعلم والتواصل والترفيه في مكان واحد</p>
+
+      <div class="features-grid">
+        @for (f of features; track f.title; let i = $index) {
+          <div class="feature-card" [style.animation-delay]="(i * 0.1) + 's'">
+            <div class="feature-icon">{{ f.icon }}</div>
+            <h3>{{ f.title }}</h3>
+            <p>{{ f.desc }}</p>
+          </div>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       DIALECTS MAP SECTION
+  ═══════════════════════════════════════════ -->
+  <section class="dialects-section observe-me" id="dialects">
+    <div class="section-inner" [class.visible]="isVisible('dialects')">
+      <div class="section-tag">اللهجات</div>
+      <h2 class="section-title">من المحيط إلى الخليج</h2>
+      <p class="section-sub">12 لهجة عربية أصيلة في مكان واحد</p>
+
+      <div class="dialects-showcase">
+        <div class="dialect-pills">
+          <div class="pill" style="--c:#c0392b">🇪🇬 المصرية</div>
+          <div class="pill" style="--c:#16a085">🇸🇦 الخليجية</div>
+          <div class="pill" style="--c:#8e44ad">🇸🇾 الشامية</div>
+          <div class="pill" style="--c:#d35400">🇲🇦 المغربية</div>
+          <div class="pill" style="--c:#2980b9">🇮🇶 العراقية</div>
+          <div class="pill" style="--c:#e67e22">🇹🇳 التونسية</div>
+          <div class="pill" style="--c:#1abc9c">🇩🇿 الجزائرية</div>
+          <div class="pill" style="--c:#34495e">🇱🇾 الليبية</div>
+          <div class="pill" style="--c:#f39c12">🇸🇩 السودانية</div>
+          <div class="pill" style="--c:#27ae60">🇯🇴 الأردنية</div>
+          <div class="pill" style="--c:#e74c3c">🇵🇸 الفلسطينية</div>
+          <div class="pill" style="--c:#c0392b">🇾🇪 اليمنية</div>
+        </div>
+
+        <div class="dialect-quote-box">
+          <div class="quote-rotate">
+            @for (d of dialects; track d.name; let i = $index) {
+              <div class="quote-item" [class.active]="activeDialect() === i">
+                <div class="quote-flag">{{ d.flag }}</div>
+                <p class="quote-phrase" [style.color]="d.color">{{ d.phrase }}</p>
+                <p class="quote-name">اللهجة {{ d.name }}</p>
+                <p class="quote-meaning">تعني: {{ d.translation }}</p>
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       HOW IT WORKS
+  ═══════════════════════════════════════════ -->
+  <section class="how-section observe-me" id="how">
+    <div class="section-inner" [class.visible]="isVisible('how')">
+      <div class="section-tag">كيف يعمل؟</div>
+      <h2 class="section-title">ثلاث خطوات للبدء</h2>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">١</div>
+          <div class="step-icon">📝</div>
+          <h3>سجّل حسابك</h3>
+          <p>أنشئ حسابك المجاني في ثوانٍ واختر لهجتك الأم واللهجات التي تريد تعلمها</p>
+        </div>
+        <div class="step-arrow"><mat-icon>arrow_back</mat-icon></div>
+        <div class="step">
+          <div class="step-num">٢</div>
+          <div class="step-icon">🎙️</div>
+          <h3>استمع وشارك</h3>
+          <p>استمع لمقاطع صوتية وفيديو حقيقية من أهل اللهجة، وأضف مقاطعك لتساعد الآخرين</p>
+        </div>
+        <div class="step-arrow"><mat-icon>arrow_back</mat-icon></div>
+        <div class="step">
+          <div class="step-num">٣</div>
+          <div class="step-icon">🌉</div>
+          <h3>ابنِ جسرك</h3>
+          <p>تواصل مباشرة مع متحدثين أصليين عبر الرسائل ومكالمات الفيديو المجانية</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════
+       FINAL CTA
+  ═══════════════════════════════════════════ -->
+  <section class="final-cta observe-me" id="cta">
+    <div class="cta-inner" [class.visible]="isVisible('cta')">
+      <div class="cta-orb-1"></div>
+      <div class="cta-orb-2"></div>
+      <div class="soundwave-lg">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span>
+      </div>
+      <h2>جاهز تبني جسرك؟</h2>
+      <p>انضم اليوم وابدأ رحلتك مع اللهجات العربية</p>
+      <div class="cta-btns">
+        @if (authService.currentUser()) {
+          <a routerLink="/home" class="cta-main big">
+            <span>الرئيسية</span>
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+        } @else {
+          <a routerLink="/register" class="cta-main big">
+            <span>ابدأ مجاناً الآن</span>
+            <mat-icon>arrow_back</mat-icon>
+          </a>
+          <a routerLink="/login" class="cta-outline">لديّ حساب بالفعل</a>
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="soundwave-sm">
+          <span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <span>جُسور</span>
+      </div>
+      <p class="footer-copy">منصة مجانية مفتوحة لتبادل اللهجات العربية · {{ currentYear }}</p>
+      <div class="footer-links">
+        @if (authService.currentUser()) {
+          <a routerLink="/home">الرئيسية</a>
+        } @else {
+          <a routerLink="/register">إنشاء حساب</a>
+          <a routerLink="/login">تسجيل الدخول</a>
+        }
+      </div>
+    </div>
+  </footer>
+
+</div>
