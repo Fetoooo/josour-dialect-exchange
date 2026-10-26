@@ -40,7 +40,7 @@ namespace DialectExchange.Infrastructure.Data.Seed
             var password = configuration["DemoUser:Password"];
 
             if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
-                throw new InvalidOperationException("Demo user credentials are not configured.");
+                return;
 
             if (await userManager.FindByEmailAsync(email) is not null)
                 return;

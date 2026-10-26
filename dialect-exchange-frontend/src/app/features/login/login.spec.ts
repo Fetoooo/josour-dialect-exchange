@@ -55,12 +55,12 @@ describe('LoginComponent', () => {
   });
 
   it('should call authService.login and navigate to /home on success', () => {
-    component.loginData = { email: 'ali@example.com', password: 'Password123!' };
+    component.loginData = { email: 'ali@example.com', password: 'mock-test-password' };
     component.onSubmit();
 
     expect(authServiceSpy.login).toHaveBeenCalledWith({
       email: 'ali@example.com',
-      password: 'Password123!'
+      password: 'mock-test-password'
     });
     expect(navigateSpy).toHaveBeenCalledWith('/home');
     expect(snackBarSpy.open).toHaveBeenCalledWith(
@@ -73,7 +73,7 @@ describe('LoginComponent', () => {
   it('should show email confirmation prompt when server returns 403', () => {
     authServiceSpy.login.mockReturnValue(throwError(() => ({ status: 403 })));
 
-    component.loginData = { email: 'unconfirmed@example.com', password: 'Password123!' };
+    component.loginData = { email: 'unconfirmed@example.com', password: 'mock-test-password' };
     component.onSubmit();
 
     expect(snackBarSpy.open).toHaveBeenCalledWith(

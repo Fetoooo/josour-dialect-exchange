@@ -86,7 +86,7 @@ describe('AuthService', () => {
         token: mockToken
       };
 
-      service.login({ email: 'test@example.com', password: 'Password123!' }).subscribe(user => {
+      service.login({ email: 'test@example.com', password: 'mock-test-password' }).subscribe(user => {
         expect(user).toEqual(mockUser);
         expect(service.currentUser()).toEqual(mockUser);
         expect(localStorage.getItem('user')).toContain('user-123');

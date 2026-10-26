@@ -75,7 +75,7 @@ describe('Register Component', () => {
     component.registerData = {
       displayName: 'Test User',
       email: 'test@example.com',
-      password: 'Password123!',
+      password: 'mock-test-password',
       nativeDialect: '3ce6f6a4-af09-471a-bc08-0fd73db19936',
       learningDialect: '9ad8d247-83a6-40b6-bfaf-babd9c6f3296'
     };
@@ -85,7 +85,7 @@ describe('Register Component', () => {
     expect(authServiceSpy.register).toHaveBeenCalledWith({
       displayName: 'Test User',
       email: 'test@example.com',
-      password: 'Password123!',
+      password: 'mock-test-password',
       nativeDialectId: '3ce6f6a4-af09-471a-bc08-0fd73db19936',
       learningDialectId: '9ad8d247-83a6-40b6-bfaf-babd9c6f3296'
     });
@@ -103,7 +103,7 @@ describe('Register Component', () => {
     component.registerData = {
       displayName: 'Test User',
       email: 'existing@example.com',
-      password: 'Password123!',
+      password: 'mock-test-password',
       nativeDialect: '3ce6f6a4-af09-471a-bc08-0fd73db19936',
       learningDialect: '9ad8d247-83a6-40b6-bfaf-babd9c6f3296'
     };
