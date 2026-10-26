@@ -4,7 +4,7 @@
 ### The Pan-Arab Dialects & Cultural Exchange Platform
 **منصة التبادل الثقافي واللهجات العربية الأولى**
 
-[![Live Website](https://img.shields.io/badge/Live_Website-josour.runasp.net-0d9488?style=for-the-badge&logo=googlechrome&logoColor=white)]
+[![Live Website](https://img.shields.io/badge/Live_Website-josour.runasp.net-0d9488?logo=googlechrome&logoColor=white)](https://josour.runasp.net/)
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Angular](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-4169E1?logo=postgresql&logoColor=white)](https://neon.tech/)
