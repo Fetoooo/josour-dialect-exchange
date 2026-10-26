@@ -1,9 +1,10 @@
 <div align="center">
 
-# 🌉 جُسور | Josour
+# جُسور | Josour
 ### The Pan-Arab Dialects & Cultural Exchange Platform
 **منصة التبادل الثقافي واللهجات العربية الأولى**
 
+[![Live Website](https://img.shields.io/badge/Live_Website-josour.runasp.net-0d9488?style=for-the-badge&logo=googlechrome&logoColor=white)](https://josour.runasp.net/)
 [![.NET 9](https://img.shields.io/badge/.NET-9.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
 [![Angular](https://img.shields.io/badge/Angular-19-DD0031?logo=angular&logoColor=white)](https://angular.dev/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-Neon_Serverless-4169E1?logo=postgresql&logoColor=white)](https://neon.tech/)
@@ -23,29 +24,41 @@
   A modern, high-performance web platform connecting Arabic speakers and language enthusiasts worldwide to explore, practice, and celebrate authentic Arabic dialects through multimedia bridges, real-time messaging, and peer-to-peer video/audio communication.
 </p>
 
+<p align="center">
+  <b>Live Application:</b> <a href="https://josour.runasp.net/" target="_blank">https://josour.runasp.net/</a>
+</p>
+
 </div>
 
 ---
 
-## 📋 Table of Contents
-1. [About Josour](#-about-josour)
-2. [Key Capabilities & Features](#-key-capabilities--features)
-3. [Visual Tour & Screenshots](#-visual-tour--screenshots)
-4. [Technology Stack](#-technology-stack)
-5. [System Architecture](#-system-architecture)
-6. [Repository Structure](#-repository-structure)
-7. [Getting Started & Local Setup](#-getting-started--local-setup)
+## Table of Contents
+1. [Live Platform](#live-platform)
+2. [About Josour](#about-josour)
+3. [Key Capabilities and Features](#key-capabilities-and-features)
+4. [Visual Tour and Screenshots](#visual-tour-and-screenshots)
+5. [Technology Stack](#technology-stack)
+6. [System Architecture](#system-architecture)
+7. [Repository Structure](#repository-structure)
+8. [Getting Started and Local Setup](#getting-started-and-local-setup)
    - [Prerequisites](#prerequisites)
    - [Backend Configuration](#backend-setup-aspnet-core)
    - [Frontend Configuration](#frontend-setup-angular)
    - [Database Migrations](#database-setup-postgresql--ef-core)
-8. [API & SignalR Hub Overview](#-api--signalr-hub-overview)
-9. [DevSecOps & Security Hardening](#-devsecops--security-hardening)
-10. [Authors & Acknowledgments](#-authors--acknowledgments)
+9. [API and SignalR Hub Overview](#api-and-signalr-hub-overview)
+10. [DevSecOps and Security Hardening](#devsecops-and-security-hardening)
+11. [License](#license)
 
 ---
 
-## 📖 About Josour
+## Live Platform
+
+The platform is deployed and publicly accessible at:
+- **URL**: [https://josour.runasp.net/](https://josour.runasp.net/)
+
+---
+
+## About Josour
 
 Across the Arab world, from the Atlantic Ocean to the Arabian Gulf, Arabic is spoken in dozens of rich, vibrant dialects—each with its own unique idioms, pronunciation, and cultural heritage. However, learners and cross-regional speakers often struggle to find authentic, interactive environments where they can hear everyday spoken dialects directly from native speakers.
 
@@ -56,40 +69,40 @@ Across the Arab world, from the Atlantic Ocean to the Arabian Gulf, Arabic is sp
 
 ---
 
-## ✨ Key Capabilities & Features
+## Key Capabilities and Features
 
-### 🎙️ Dialect Bridges & Multimedia Sharing
+### Dialect Bridges and Multimedia Sharing
 - **Short Clip Publishing**: Users upload short video and audio clips illustrating expressions, jokes, accents, or cultural nuances.
 - **Automatic Multi-Tier Storage**: Integrated Cloudinary cloud media storage with an automatic fallback to local disk storage (`wwwroot/uploads`) to guarantee zero upload disruption.
 - **Interactive Video Player**: Embedded custom playback dialog with like, comment, and bookmark capabilities.
 
-### 💬 Real-Time Messaging & Presence (SignalR)
+### Real-Time Messaging and Presence (SignalR)
 - **Instant Chat**: One-to-one messaging powered by ASP.NET Core SignalR hubs with automated reconnect and message deduplication.
 - **Rich Media Messages**: Send images, videos, documents, and voice recordings directly within the chat window.
 - **Voice Message Recorder**: In-browser WebRTC MediaRecorder with studio waveform visualization and acoustic noise suppression.
 - **Message Lifecycle**: Edit and soft-delete messages within a 5-minute safety window.
-- **Live Presence & Typing**: Real-time online/offline indicators and read receipts.
+- **Live Presence and Typing**: Real-time online/offline indicators and read receipts.
 
-### 📞 WebRTC Peer-to-Peer Calling
-- **Direct Video & Audio Calls**: Low-latency, peer-to-peer audio and video calls connecting users across browsers.
+### WebRTC Peer-to-Peer Calling
+- **Direct Video and Audio Calls**: Low-latency, peer-to-peer audio and video calls connecting users across browsers.
 - **Hardware Noise Suppression**: Integrated WebRTC acoustic echo cancellation (`echoCancellation: true`), noise suppression (`noiseSuppression: true`), and auto-gain control (`autoGainControl: true`) to deliver crystal-clear voice clarity.
 - **Dynamic Call Signaling**: SignalR-powered exchange of ICE candidates and SDP offers/answers with call failure and rejection notifications.
 
-### 🗺️ Pan-Arab Dialect Explorer
+### Pan-Arab Dialect Explorer
 - **12 Supported Regional Dialects**: Egyptian (المصرية), Gulf (الخليجية), Levantine (الشامية), Moroccan (المغربية), Algerian (الجزائرية), Tunisian (التونسية), Iraqi (العراقية), Libyan (الليبية), Yemeni (اليمنية), Palestinian (الفلسطينية), Jordanian (الأردنية), and Sudanese (السودانية).
 - **Interactive Flashcards**: Quick phrases, translations, and audio pronunciations for everyday conversational fluency.
 
-### 📱 Responsive & Accessible UI
+### Responsive and Accessible UI
 - **Mobile-First Experience**: Fully adaptive layout designed for desktop, tablet, and mobile devices with iOS/Android safe-area handling.
 - **RTL-Native Design**: Tailored right-to-left Arabic typography using the Google Font *Cairo*, subtle glassmorphism, and accessible color tokens.
 
 ---
 
-## 📸 Visual Tour & Screenshots
+## Visual Tour and Screenshots
 
 <div align="center">
 
-### 1. Landing & Dialect Showcase
+### 1. Landing and Dialect Showcase
 <img src="docs/screenshots/hero-landing.png" alt="Hero Landing Page" width="90%" style="border-radius: 10px; margin-bottom: 24px;" />
 <p align="center"><i>Interactive hero section featuring floating dialect cards and audio waveforms.</i></p>
 
@@ -105,13 +118,21 @@ Across the Arab world, from the Atlantic Ocean to the Arabian Gulf, Arabic is sp
 <img src="docs/screenshots/how-it-works.png" alt="How It Works" width="90%" style="border-radius: 10px; margin-bottom: 24px;" />
 <p align="center"><i>Three simple steps: Create an account, explore and share clips, and connect with native speakers.</i></p>
 
+### 5. Dialect Discovery and Regional Statistics
+<img src="docs/screenshots/explore-dialects.png" alt="Dialect Discovery and Statistics" width="90%" style="border-radius: 10px; margin-bottom: 24px;" />
+<p align="center"><i>Interactive discovery overview showcasing over 350M+ speakers and 22 Arab countries.</i></p>
+
+### 6. Regional Dialects Directory Grid
+<img src="docs/screenshots/dialects-grid.png" alt="Regional Dialects Directory Grid" width="90%" style="border-radius: 10px; margin-bottom: 24px;" />
+<p align="center"><i>Direct access to regional dialect modules with native speaker demographics and cultural guides.</i></p>
+
 </div>
 
 ---
 
-## 🛠️ Technology Stack
+## Technology Stack
 
-| Layer | Technologies & Frameworks | Purpose & Highlights |
+| Layer | Technologies and Frameworks | Purpose and Highlights |
 | :--- | :--- | :--- |
 | **Frontend SPA** | **Angular 19+**, TypeScript, RxJS, Signals | Zoneless change detection, Standalone Components, Material UI, SCSS |
 | **Backend API** | **ASP.NET Core 9 (C# .NET 9)**, Web API | Clean Layered Architecture, Kestrel, ASP.NET Identity |
@@ -123,7 +144,7 @@ Across the Arab world, from the Atlantic Ocean to the Arabian Gulf, Arabic is sp
 
 ---
 
-## 🏗️ System Architecture
+## System Architecture
 
 ```mermaid
 graph TD
@@ -144,7 +165,7 @@ graph TD
 
 ---
 
-## 📁 Repository Structure
+## Repository Structure
 
 ```text
 josour-dialect-exchange/
@@ -185,12 +206,12 @@ josour-dialect-exchange/
 
 ---
 
-## 🚀 Getting Started & Local Setup
+## Getting Started and Local Setup
 
 ### Prerequisites
 Before running the project locally, ensure you have the following installed:
 - **.NET 9.0 SDK**: [Download .NET 9](https://dotnet.microsoft.com/download/dotnet/9.0)
-- **Node.js (LTS v20+)** & **npm**: [Download Node.js](https://nodejs.org/)
+- **Node.js (LTS v20+)** and **npm**: [Download Node.js](https://nodejs.org/)
 - **PostgreSQL**: A local PostgreSQL instance (v14+) or a free [Neon Serverless Postgres](https://neon.tech/) database.
 
 ---
@@ -255,7 +276,7 @@ Before running the project locally, ensure you have the following installed:
 
 ---
 
-## 🔌 API & SignalR Hub Overview
+## API and SignalR Hub Overview
 
 ### Core REST Endpoints
 
@@ -285,16 +306,24 @@ Before running the project locally, ensure you have the following installed:
 
 ---
 
-## 🔒 DevSecOps & Security Hardening
+## DevSecOps and Security Hardening
 
 - **Zero Credential Exposure**: Real connection strings, JWT signing keys, and API secrets are kept strictly out of Git using multi-stage `.gitignore` rules and local overrides.
 - **File Validation Engine**: Uploaded media is validated for genuine file headers (magic bytes), MIME types, and maximum size limits before processing.
 - **Rate Limiting**: Integrated ASP.NET Core FixedWindow rate limiting policies on authentication and upload endpoints to defend against brute force and denial of service.
-- **CORS & Forwarded Headers**: Strict allowed origins and secure reverse-proxy forwarded headers configuration for production hosting.
+- **CORS and Forwarded Headers**: Strict allowed origins and secure reverse-proxy forwarded headers configuration for production hosting.
 
 ---
 
-## 📄 License
+## License
 
 This project is published for portfolio and software architecture demonstration purposes. All rights reserved by the repository owner.
 For inquiries regarding reuse, licensing, or commercial distribution, please contact the author.
+
+---
+
+<div align="center">
+
+Built with ❤️ by Fathy
+
+</div>
